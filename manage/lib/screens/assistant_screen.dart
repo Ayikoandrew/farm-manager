@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:genui/genui.dart';
@@ -8,6 +7,7 @@ import 'package:manage/config/theme.dart';
 import 'package:manage/models/animal.dart';
 import 'package:manage/providers/providers.dart';
 import 'package:manage/services/gemini_content_generator.dart';
+import 'package:manage/utils/env_helper.dart';
 
 class AssistantScreen extends ConsumerStatefulWidget {
   const AssistantScreen({super.key});
@@ -17,10 +17,7 @@ class AssistantScreen extends ConsumerStatefulWidget {
 }
 
 class _AssistantScreenState extends ConsumerState<AssistantScreen> {
-  final String _apiKey =
-      const String.fromEnvironment('GEMINI_API_KEY').isNotEmpty
-      ? const String.fromEnvironment('GEMINI_API_KEY')
-      : (dotenv.env['GEMINI_API_KEY'] ?? "");
+  final String _apiKey = EnvHelper.getOrDefault('GEMINI_API_KEY', '');
   GenUiConversation? _conversation;
   A2uiMessageProcessor? _processor;
   String? _initError;

@@ -78,7 +78,9 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
     }
 
     try {
-      final content = await rootBundle.loadString('docs/documentation.md');
+      final content = await rootBundle.loadString(
+        'assets/docs/documentation.md',
+      );
       final sections = _parseIntoSections(content);
       final toc = _buildTableOfContents(sections);
 
