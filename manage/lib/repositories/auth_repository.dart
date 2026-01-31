@@ -798,18 +798,39 @@ class AuthRepository {
 
   /// Get all members of a farm
   Future<List<FarmMember>> getFarmMembers(String farmId) async {
-    // Query all users who have this farm in their farms array
-    final allUsers = await _client.from(_usersTable).select();
-    final members = <FarmMember>[];
+    // Use RPC function to get farm members (bypasses RLS safely)
+    try {
+      final response = await _client.rpc(
+        'get_farm_members',
+        params: {'farm_uuid': farmId},
+      );
 
-    for (final userData in allUsers) {
-      final user = AppUser.fromSupabase(userData);
-      final farmMembership = user.farms
-          .where((f) => f.farmId == farmId)
-          .firstOrNull;
+      final members = <FarmMember>[];
+      for (final memberData in response as List) {
+        // Parse roles from JSONB
+        List<UserRole> roles = [UserRole.worker];
+        final rolesData = memberData['roles'];
+        if (rolesData != null) {
+          if (rolesData is List) {
+            roles = rolesData
+                .map((r) => UserRoleExtension.fromString(r.toString()))
+                .toList();
+          } else if (rolesData is String) {
+            // Handle case where roles might be a JSON string
+            try {
+              final parsed = rolesData.startsWith('[')
+                  ? (rolesData.replaceAll('[', '').replaceAll(']', '').replaceAll('"', '').split(','))
+                  : [rolesData];
+              roles = parsed
+                  .map((r) => UserRoleExtension.fromString(r.trim()))
+                  .toList();
+            } catch (_) {
+              roles = [UserRole.worker];
+            }
+          }
+        }
 
-      if (farmMembership != null) {
-        final roles = List<UserRole>.from(farmMembership.roles);
+        // Sort roles by priority
         roles.sort((a, b) {
           const roleOrder = {
             UserRole.owner: 0,
@@ -822,82 +843,40 @@ class AuthRepository {
 
         members.add(
           FarmMember(
-            userId: user.id,
-            email: user.email,
-            displayName: user.displayName,
-            photoUrl: user.photoUrl,
+            userId: memberData['user_id'],
+            email: memberData['email'] ?? '',
+            displayName: memberData['display_name'],
+            photoUrl: memberData['photo_url'],
             roles: roles,
-            joinedAt: farmMembership.joinedAt,
+            joinedAt: memberData['joined_at'] != null
+                ? DateTime.parse(memberData['joined_at'])
+                : DateTime.now(),
           ),
         );
       }
-    }
-
-    members.sort((a, b) {
-      const roleOrder = {
-        UserRole.owner: 0,
-        UserRole.manager: 1,
-        UserRole.vet: 2,
-        UserRole.worker: 3,
-      };
-      return (roleOrder[a.primaryRole] ?? 4).compareTo(
-        roleOrder[b.primaryRole] ?? 4,
-      );
-    });
-
-    return members;
-  }
-
-  /// Watch farm members (stream version)
-  Stream<List<FarmMember>> watchFarmMembers(String farmId) {
-    return _client.from(_usersTable).stream(primaryKey: ['id']).map((snapshot) {
-      final members = <FarmMember>[];
-
-      for (final userData in snapshot) {
-        final user = AppUser.fromSupabase(userData);
-        final farmMembership = user.farms
-            .where((f) => f.farmId == farmId)
-            .firstOrNull;
-
-        if (farmMembership != null) {
-          final roles = List<UserRole>.from(farmMembership.roles);
-          roles.sort((a, b) {
-            const roleOrder = {
-              UserRole.owner: 0,
-              UserRole.manager: 1,
-              UserRole.vet: 2,
-              UserRole.worker: 3,
-            };
-            return (roleOrder[a] ?? 4).compareTo(roleOrder[b] ?? 4);
-          });
-
-          members.add(
-            FarmMember(
-              userId: user.id,
-              email: user.email,
-              displayName: user.displayName,
-              photoUrl: user.photoUrl,
-              roles: roles,
-              joinedAt: farmMembership.joinedAt,
-            ),
-          );
-        }
-      }
-
-      members.sort((a, b) {
-        const roleOrder = {
-          UserRole.owner: 0,
-          UserRole.manager: 1,
-          UserRole.vet: 2,
-          UserRole.worker: 3,
-        };
-        return (roleOrder[a.primaryRole] ?? 4).compareTo(
-          roleOrder[b.primaryRole] ?? 4,
-        );
-      });
 
       return members;
-    });
+    } catch (e) {
+      debugPrint('Error getting farm members: $e');
+      return [];
+    }
+  }
+
+  /// Watch farm members (stream version using polling since RPC can't be streamed)
+  /// This method is kept for compatibility but prefer watchFarmMembersWithInitial
+  Stream<List<FarmMember>> watchFarmMembers(String farmId) {
+    return watchFarmMembersWithInitial(farmId);
+  }
+  
+  /// Get farm members stream with immediate initial value
+  Stream<List<FarmMember>> watchFarmMembersWithInitial(String farmId) async* {
+    // Emit initial value immediately
+    yield await getFarmMembers(farmId);
+    
+    // Then poll periodically every 30 seconds for updates
+    await for (final _ in Stream.periodic(const Duration(seconds: 30))) {
+      yield await getFarmMembers(farmId);
+    }
   }
 
   /// Remove a member from a farm
