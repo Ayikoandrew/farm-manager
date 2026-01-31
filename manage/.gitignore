@@ -54,3 +54,4 @@ app.*.map.json
 # Sensitive files
 password.txt
 .vscode/mcp.json
+weight_records_rows.json
