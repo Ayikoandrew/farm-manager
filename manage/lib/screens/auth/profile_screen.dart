@@ -3047,6 +3047,11 @@ class _ManageTeamDialogState extends ConsumerState<_ManageTeamDialog> {
                             .toList(),
                       );
 
+                      if (success) {
+                        // Invalidate the provider to refresh the list
+                        ref.invalidate(farmMembersProvider);
+                      }
+
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
