@@ -198,7 +198,12 @@ class AuthRepository {
     try {
       // For web, use Supabase OAuth flow (redirects to Google)
       if (kIsWeb) {
-        await _client.auth.signInWithOAuth(OAuthProvider.google);
+        // Get the current URL origin for redirect (works for both local and deployed)
+        final redirectUrl = Uri.base.origin;
+        await _client.auth.signInWithOAuth(
+          OAuthProvider.google,
+          redirectTo: redirectUrl,
+        );
         // OAuth flow redirects the page, so we return success
         // The actual user will be available after redirect
         return AuthResult(success: true);
