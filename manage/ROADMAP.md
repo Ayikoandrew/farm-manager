@@ -17,6 +17,7 @@ A comprehensive roadmap for enhancing the Farm Manager application.
 9. [UI/UX Improvements](#9-uiux-improvements)
 10. [Localization](#10-localization)
 11. [Marketplace](#11-marketplace)
+12. [Performance Optimization](#12-performance-optimization)
 
 ---
 
@@ -560,6 +561,77 @@ Unlike generic marketplaces, Farm Manager has verified data that builds buyer tr
 
 ---
 
+## 12. Performance Optimization
+
+### Overview
+Optimize app performance for smooth user experience across web and mobile platforms, with focus on memory usage, load times, and responsiveness.
+
+### Current Metrics (Baseline - Jan 2026)
+| Metric | Current | Target |
+|--------|---------|--------|
+| Web Memory Usage | ~159 MB | <120 MB |
+| Initial Load Time | TBD | <3s |
+| Time to Interactive | TBD | <2s |
+| Lighthouse Score | TBD | >80 |
+
+### 12.1 Memory Optimization
+- [ ] Audit memory usage with DevTools
+- [ ] Implement image cache limits
+  - [ ] Set max cache size (50 MB)
+  - [ ] Clear cache on low memory
+- [ ] Optimize widget tree depth
+- [ ] Dispose controllers and streams properly
+- [ ] Use `const` constructors everywhere possible
+- [ ] Implement lazy loading for heavy screens
+
+### 12.2 Load Time Optimization
+- [ ] Code splitting / deferred loading
+  - [ ] Lazy load ML Analytics module
+  - [ ] Lazy load Reports module
+  - [ ] Lazy load Marketplace (future)
+- [ ] Optimize asset loading
+  - [ ] Compress images
+  - [ ] Use WebP format
+  - [ ] Implement progressive image loading
+- [ ] Tree-shake unused code
+- [ ] Minimize main.dart.js size
+
+### 12.3 Runtime Performance
+- [ ] Profile and fix jank (dropped frames)
+- [ ] Optimize list rendering
+  - [x] Implement pagination for large lists
+  - [ ] Use `ListView.builder` everywhere
+  - [ ] Implement item recycling
+- [ ] Reduce unnecessary rebuilds
+  - [ ] Use `select` on Riverpod providers
+  - [ ] Memoize expensive computations
+- [ ] Optimize animations
+
+### 12.4 Network Optimization
+- [ ] Implement request caching
+- [ ] Batch API requests where possible
+- [ ] Use compression for API responses
+- [ ] Implement smart prefetching
+- [ ] Reduce Supabase realtime subscriptions
+
+### 12.5 Flutter Web Specific
+- [ ] Evaluate HTML vs CanvasKit renderer
+  - HTML: Lighter (~50% less memory)
+  - CanvasKit: Better visual consistency
+- [ ] Implement service worker for caching
+- [ ] Optimize fonts (subset, preload)
+- [ ] Consider WASM compilation when stable
+
+### Technical Tools
+- Flutter DevTools (Performance tab)
+- Chrome DevTools (Memory, Performance)
+- Lighthouse audits
+- Firebase Performance Monitoring
+
+### Priority: **MEDIUM** (Phase 3)
+
+---
+
 ## Contributing
 
 When implementing features:
@@ -585,7 +657,8 @@ When implementing features:
 | Hardware Integration | 🔴 Not Started | LOW | Phase 3 |
 | UI/UX Improvements | 🟡 Ongoing | MEDIUM | All |
 | Localization | 🔴 Not Started | LOW | Phase 4 |
-| **Marketplace** | 🔴 Not Started | LOW | Phase 4+ |
+| Marketplace | 🔴 Not Started | LOW | Phase 4+ |
+| **Performance Optimization** | 🔴 Not Started | MEDIUM | Phase 3 |
 
 **Legend:**
 - 🔴 Not Started
