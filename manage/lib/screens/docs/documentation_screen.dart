@@ -8,7 +8,6 @@ import '../../router/app_router.dart';
 
 /// Cached documentation content to avoid reloading
 class _DocCache {
-  static String? content;
   static List<_DocSection>? sections;
   static List<_TableOfContentsItem>? toc;
 }
@@ -19,7 +18,7 @@ class _DocSection {
   final String title;
   final int level;
   final String content;
-  
+
   _DocSection({
     required this.id,
     required this.title,
@@ -49,7 +48,7 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
   String _searchQuery = '';
   bool _showTableOfContents = true;
   String? _selectedSectionId;
-  
+
   // Cache the stylesheet
   MarkdownStyleSheet? _styleSheet;
 
@@ -82,12 +81,11 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
       final content = await rootBundle.loadString('docs/documentation.md');
       final sections = _parseIntoSections(content);
       final toc = _buildTableOfContents(sections);
-      
+
       // Cache for future use
-      _DocCache.content = content;
       _DocCache.sections = sections;
       _DocCache.toc = toc;
-      
+
       setState(() {
         _sections = sections;
         _tableOfContents = toc;
@@ -106,25 +104,27 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
   List<_DocSection> _parseIntoSections(String content) {
     final lines = content.split('\n');
     final sections = <_DocSection>[];
-    
+
     String currentTitle = 'Introduction';
     int currentLevel = 1;
     String currentId = 'introduction';
     final buffer = StringBuffer();
-    
+
     for (final line in lines) {
       if (line.startsWith('## ')) {
         // Save previous section
         if (buffer.isNotEmpty) {
-          sections.add(_DocSection(
-            id: currentId,
-            title: currentTitle,
-            level: currentLevel,
-            content: buffer.toString().trim(),
-          ));
+          sections.add(
+            _DocSection(
+              id: currentId,
+              title: currentTitle,
+              level: currentLevel,
+              content: buffer.toString().trim(),
+            ),
+          );
           buffer.clear();
         }
-        
+
         currentTitle = line.substring(3).trim();
         currentLevel = 2;
         currentId = _generateAnchor(currentTitle);
@@ -133,44 +133,50 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
         buffer.writeln(line);
       }
     }
-    
+
     // Add last section
     if (buffer.isNotEmpty) {
-      sections.add(_DocSection(
-        id: currentId,
-        title: currentTitle,
-        level: currentLevel,
-        content: buffer.toString().trim(),
-      ));
+      sections.add(
+        _DocSection(
+          id: currentId,
+          title: currentTitle,
+          level: currentLevel,
+          content: buffer.toString().trim(),
+        ),
+      );
     }
-    
+
     return sections;
   }
 
   List<_TableOfContentsItem> _buildTableOfContents(List<_DocSection> sections) {
     final items = <_TableOfContentsItem>[];
-    
+
     for (final section in sections) {
-      items.add(_TableOfContentsItem(
-        title: section.title,
-        anchor: section.id,
-        level: section.level,
-      ));
-      
+      items.add(
+        _TableOfContentsItem(
+          title: section.title,
+          anchor: section.id,
+          level: section.level,
+        ),
+      );
+
       // Parse subsections (### headings) within each section
       final lines = section.content.split('\n');
       for (final line in lines) {
         if (line.startsWith('### ')) {
           final title = line.substring(4).trim();
-          items.add(_TableOfContentsItem(
-            title: title,
-            anchor: _generateAnchor(title),
-            level: 3,
-          ));
+          items.add(
+            _TableOfContentsItem(
+              title: title,
+              anchor: _generateAnchor(title),
+              level: 3,
+            ),
+          );
         }
       }
     }
-    
+
     return items;
   }
 
@@ -185,7 +191,7 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
     if (_searchQuery.isEmpty) {
       return _sections;
     }
-    
+
     final query = _searchQuery.toLowerCase();
     return _sections.where((section) {
       return section.title.toLowerCase().contains(query) ||
@@ -244,12 +250,19 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
               color: AppTheme.farmGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.menu_book, color: AppTheme.farmGreen, size: 24),
+            child: const Icon(
+              Icons.menu_book,
+              color: AppTheme.farmGreen,
+              size: 24,
+            ),
           ),
           const SizedBox(width: 12),
           Text(
             'Documentation',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 20),
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
           ),
         ],
       ),
@@ -290,7 +303,8 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
           IconButton(
             icon: Icon(_showTableOfContents ? Icons.menu_open : Icons.menu),
             tooltip: _showTableOfContents ? 'Hide contents' : 'Show contents',
-            onPressed: () => setState(() => _showTableOfContents = !_showTableOfContents),
+            onPressed: () =>
+                setState(() => _showTableOfContents = !_showTableOfContents),
           ),
         IconButton(
           icon: const Icon(Icons.home_outlined),
@@ -323,7 +337,10 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
           children: [
             Icon(Icons.error_outline, size: 64, color: theme.colorScheme.error),
             const SizedBox(height: 16),
-            Text('Error Loading Documentation', style: theme.textTheme.headlineSmall),
+            Text(
+              'Error Loading Documentation',
+              style: theme.textTheme.headlineSmall,
+            ),
             const SizedBox(height: 8),
             Text(_error!),
             const SizedBox(height: 24),
@@ -350,10 +367,7 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (_showTableOfContents)
-            SizedBox(
-              width: 280,
-              child: _buildTableOfContentsWidget(theme),
-            ),
+            SizedBox(width: 280, child: _buildTableOfContentsWidget(theme)),
           Expanded(child: _buildContentArea(theme)),
         ],
       );
@@ -365,8 +379,13 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
   Widget _buildTableOfContentsWidget(ThemeData theme) {
     final filteredToc = _searchQuery.isEmpty
         ? _tableOfContents
-        : _tableOfContents.where((item) =>
-            item.title.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+        : _tableOfContents
+              .where(
+                (item) => item.title.toLowerCase().contains(
+                  _searchQuery.toLowerCase(),
+                ),
+              )
+              .toList();
 
     return Container(
       decoration: BoxDecoration(
@@ -381,7 +400,9 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
             padding: const EdgeInsets.all(16),
             child: Text(
               'Table of Contents',
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           const Divider(height: 1),
@@ -392,11 +413,13 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
               itemBuilder: (context, index) {
                 final item = filteredToc[index];
                 final isSelected = item.anchor == _selectedSectionId;
-                
+
                 return InkWell(
                   onTap: () => _scrollToSection(item.anchor),
                   child: Container(
-                    color: isSelected ? AppTheme.farmGreen.withValues(alpha: 0.1) : null,
+                    color: isSelected
+                        ? AppTheme.farmGreen.withValues(alpha: 0.1)
+                        : null,
                     padding: EdgeInsets.only(
                       left: item.level == 2 ? 16 : 32,
                       right: 16,
@@ -419,12 +442,14 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
                           child: Text(
                             item.title,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: item.level == 2 ? FontWeight.w600 : FontWeight.normal,
+                              fontWeight: item.level == 2
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
                               color: isSelected
                                   ? AppTheme.farmGreen
                                   : item.level == 2
-                                      ? theme.colorScheme.onSurface
-                                      : theme.colorScheme.onSurfaceVariant,
+                                  ? theme.colorScheme.onSurface
+                                  : theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -450,7 +475,10 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
           children: [
             Icon(Icons.search_off, size: 64, color: theme.colorScheme.outline),
             const SizedBox(height: 16),
-            Text('No results found for "$_searchQuery"', style: theme.textTheme.titleMedium),
+            Text(
+              'No results found for "$_searchQuery"',
+              style: theme.textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
             TextButton(
               onPressed: () {
@@ -470,7 +498,9 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
         : filteredSections;
 
     // If selected section not found, show all
-    final displaySections = sectionsToShow.isEmpty ? filteredSections : sectionsToShow;
+    final displaySections = sectionsToShow.isEmpty
+        ? filteredSections
+        : sectionsToShow;
 
     return Scrollbar(
       controller: _scrollController,
@@ -513,14 +543,21 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
     );
   }
 
-  Widget _buildNavigationFooter(ThemeData theme, List<_DocSection> allSections) {
+  Widget _buildNavigationFooter(
+    ThemeData theme,
+    List<_DocSection> allSections,
+  ) {
     if (_selectedSectionId == null || _searchQuery.isNotEmpty) {
       return const SizedBox(height: 100);
     }
 
-    final currentIndex = allSections.indexWhere((s) => s.id == _selectedSectionId);
+    final currentIndex = allSections.indexWhere(
+      (s) => s.id == _selectedSectionId,
+    );
     final prevSection = currentIndex > 0 ? allSections[currentIndex - 1] : null;
-    final nextSection = currentIndex < allSections.length - 1 ? allSections[currentIndex + 1] : null;
+    final nextSection = currentIndex < allSections.length - 1
+        ? allSections[currentIndex + 1]
+        : null;
 
     return Center(
       child: ConstrainedBox(
@@ -596,7 +633,9 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
                         icon: const Icon(Icons.close),
                         onPressed: () => Navigator.pop(context),
                       ),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     onChanged: (value) => setState(() => _searchQuery = value),
                   ),
@@ -609,12 +648,16 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
                     itemBuilder: (context, index) {
                       final item = _tableOfContents[index];
                       if (_searchQuery.isNotEmpty &&
-                          !item.title.toLowerCase().contains(_searchQuery.toLowerCase())) {
+                          !item.title.toLowerCase().contains(
+                            _searchQuery.toLowerCase(),
+                          )) {
                         return const SizedBox.shrink();
                       }
                       return ListTile(
                         leading: Icon(
-                          item.level == 2 ? Icons.article : Icons.subdirectory_arrow_right,
+                          item.level == 2
+                              ? Icons.article
+                              : Icons.subdirectory_arrow_right,
                           size: 20,
                         ),
                         title: Text(item.title),
@@ -681,7 +724,9 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       codeblockPadding: const EdgeInsets.all(16),
-      listBullet: theme.textTheme.bodyLarge?.copyWith(color: AppTheme.farmGreen),
+      listBullet: theme.textTheme.bodyLarge?.copyWith(
+        color: AppTheme.farmGreen,
+      ),
       listIndent: 24,
       blockquote: theme.textTheme.bodyLarge?.copyWith(
         color: theme.colorScheme.onSurfaceVariant,
@@ -692,13 +737,23 @@ class _DocumentationScreenState extends State<DocumentationScreen> {
       ),
       blockquotePadding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
       horizontalRuleDecoration: BoxDecoration(
-        border: Border(top: BorderSide(color: theme.colorScheme.outlineVariant, width: 1)),
+        border: Border(
+          top: BorderSide(color: theme.colorScheme.outlineVariant, width: 1),
+        ),
       ),
-      tableHead: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+      tableHead: theme.textTheme.bodyMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
       tableBody: theme.textTheme.bodyMedium,
-      tableBorder: TableBorder.all(color: theme.colorScheme.outlineVariant, width: 1),
+      tableBorder: TableBorder.all(
+        color: theme.colorScheme.outlineVariant,
+        width: 1,
+      ),
       tableColumnWidth: const IntrinsicColumnWidth(),
-      tableCellsPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      tableCellsPadding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 8,
+      ),
       h1Padding: const EdgeInsets.only(top: 32, bottom: 16),
       h2Padding: const EdgeInsets.only(top: 24, bottom: 12),
       h3Padding: const EdgeInsets.only(top: 20, bottom: 8),
@@ -734,7 +789,7 @@ class _NavigationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -747,12 +802,19 @@ class _NavigationCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: isNext ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            crossAxisAlignment: isNext
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (!isNext) const Icon(Icons.arrow_back, size: 16, color: AppTheme.farmGreen),
+                  if (!isNext)
+                    const Icon(
+                      Icons.arrow_back,
+                      size: 16,
+                      color: AppTheme.farmGreen,
+                    ),
                   if (!isNext) const SizedBox(width: 4),
                   Text(
                     isNext ? 'Next' : 'Previous',
@@ -762,13 +824,20 @@ class _NavigationCard extends StatelessWidget {
                     ),
                   ),
                   if (isNext) const SizedBox(width: 4),
-                  if (isNext) const Icon(Icons.arrow_forward, size: 16, color: AppTheme.farmGreen),
+                  if (isNext)
+                    const Icon(
+                      Icons.arrow_forward,
+                      size: 16,
+                      color: AppTheme.farmGreen,
+                    ),
                 ],
               ),
               const SizedBox(height: 4),
               Text(
                 title,
-                style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
                 textAlign: isNext ? TextAlign.end : TextAlign.start,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
