@@ -1,0 +1,10 @@
+# Globe.dev configuration
+# https://docs.globe.dev
+
+# Build hooks to create .env file from environment variables
+hooks:
+  pre_build:
+    - echo "SUPABASE_URL=$SUPABASE_URL" >> .env
+    - echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> .env
+    - echo "GOOGLE_WEB_CLIENT=$GOOGLE_WEB_CLIENT" >> .env
+    - echo "GEMINI_API_KEY=$GEMINI_API_KEY" >> .env
