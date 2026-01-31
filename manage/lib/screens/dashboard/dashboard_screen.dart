@@ -334,71 +334,109 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 
   Widget _buildQuickActionsGrid(BuildContext context) {
-    final actions = [
-      _QuickAction(
-        title: 'Animals',
-        subtitle: 'View all',
-        icon: Icons.pets,
-        color: Colors.teal,
-        onTap: () => coordinator.push(AnimalsRoute()),
+    // Get current user's role for the active farm
+    final user = ref.watch(currentUserProvider).value;
+    final userRole = user?.activeRole ?? UserRole.worker;
+    
+    // Define all actions with their required minimum role
+    final allActions = <({_QuickAction action, UserRole minRole})>[
+      (
+        action: _QuickAction(
+          title: 'Animals',
+          subtitle: 'View all',
+          icon: Icons.pets,
+          color: Colors.teal,
+          onTap: () => coordinator.push(AnimalsRoute()),
+        ),
+        minRole: UserRole.worker, // All roles can view animals
       ),
-      _QuickAction(
-        title: 'Health',
-        subtitle: 'Records',
-        icon: Icons.medical_services,
-        color: Colors.red,
-        onTap: () => coordinator.push(HealthRoute()),
+      (
+        action: _QuickAction(
+          title: 'Health',
+          subtitle: 'Records',
+          icon: Icons.medical_services,
+          color: Colors.red,
+          onTap: () => coordinator.push(HealthRoute()),
+        ),
+        minRole: UserRole.vet, // Vet, manager, owner
       ),
-      _QuickAction(
-        title: 'Weight',
-        subtitle: 'Tracking',
-        icon: Icons.monitor_weight,
-        color: Colors.blue,
-        onTap: () => coordinator.push(WeightRoute()),
+      (
+        action: _QuickAction(
+          title: 'Weight',
+          subtitle: 'Tracking',
+          icon: Icons.monitor_weight,
+          color: Colors.blue,
+          onTap: () => coordinator.push(WeightRoute()),
+        ),
+        minRole: UserRole.worker, // All roles
       ),
-      _QuickAction(
-        title: 'Feeding',
-        subtitle: 'Schedules',
-        icon: Icons.restaurant,
-        color: Colors.orange,
-        onTap: () => coordinator.push(FeedingRoute()),
+      (
+        action: _QuickAction(
+          title: 'Feeding',
+          subtitle: 'Schedules',
+          icon: Icons.restaurant,
+          color: Colors.orange,
+          onTap: () => coordinator.push(FeedingRoute()),
+        ),
+        minRole: UserRole.worker, // All roles
       ),
-      _QuickAction(
-        title: 'Breeding',
-        subtitle: 'Records',
-        icon: Icons.favorite_border,
-        color: Colors.pink,
-        onTap: () => coordinator.push(BreedingRoute()),
+      (
+        action: _QuickAction(
+          title: 'Breeding',
+          subtitle: 'Records',
+          icon: Icons.favorite_border,
+          color: Colors.pink,
+          onTap: () => coordinator.push(BreedingRoute()),
+        ),
+        minRole: UserRole.vet, // Vet, manager, owner
       ),
-      _QuickAction(
-        title: 'Financial',
-        subtitle: 'Expenses',
-        icon: Icons.account_balance_wallet,
-        color: Colors.green,
-        onTap: () => coordinator.push(FinancialRoute()),
+      (
+        action: _QuickAction(
+          title: 'Financial',
+          subtitle: 'Expenses',
+          icon: Icons.account_balance_wallet,
+          color: Colors.green,
+          onTap: () => coordinator.push(FinancialRoute()),
+        ),
+        minRole: UserRole.manager, // Manager, owner only
       ),
-      _QuickAction(
-        title: 'Reports',
-        subtitle: 'Analytics',
-        icon: Icons.bar_chart,
-        color: Colors.purple,
-        onTap: () => coordinator.push(ReportsRoute()),
+      (
+        action: _QuickAction(
+          title: 'Reports',
+          subtitle: 'Analytics',
+          icon: Icons.bar_chart,
+          color: Colors.purple,
+          onTap: () => coordinator.push(ReportsRoute()),
+        ),
+        minRole: UserRole.manager, // Manager, owner only
       ),
-      _QuickAction(
-        title: 'ML Analytics',
-        subtitle: 'AI Insights',
-        icon: Icons.psychology,
-        color: const Color(0xFF6366F1),
-        onTap: () => coordinator.push(MLRoute()),
+      (
+        action: _QuickAction(
+          title: 'ML Analytics',
+          subtitle: 'AI Insights',
+          icon: Icons.psychology,
+          color: const Color(0xFF6366F1),
+          onTap: () => coordinator.push(MLRoute()),
+        ),
+        minRole: UserRole.manager, // Manager, owner only
       ),
-      _QuickAction(
-        title: 'Budget',
-        subtitle: 'Planning',
-        icon: Icons.savings,
-        color: Colors.amber,
-        onTap: () => coordinator.push(BudgetRoute()),
+      (
+        action: _QuickAction(
+          title: 'Budget',
+          subtitle: 'Planning',
+          icon: Icons.savings,
+          color: Colors.amber,
+          onTap: () => coordinator.push(BudgetRoute()),
+        ),
+        minRole: UserRole.owner, // Owner only
       ),
     ];
+    
+    // Filter actions based on user role
+    final actions = allActions
+        .where((item) => _hasAccessToAction(userRole, item.minRole))
+        .map((item) => item.action)
+        .toList();
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -665,6 +703,22 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         );
       },
     );
+  }
+  
+  /// Check if user role has access to an action based on minimum required role
+  bool _hasAccessToAction(UserRole userRole, UserRole minRole) {
+    // Role hierarchy: owner > manager > vet > worker
+    const roleHierarchy = {
+      UserRole.owner: 4,
+      UserRole.manager: 3,
+      UserRole.vet: 2,
+      UserRole.worker: 1,
+    };
+    
+    final userLevel = roleHierarchy[userRole] ?? 1;
+    final requiredLevel = roleHierarchy[minRole] ?? 1;
+    
+    return userLevel >= requiredLevel;
   }
 }
 
