@@ -61,7 +61,9 @@ class ConnectivityService {
 
     // Verify actual internet access with HTTP request to Supabase (has CORS configured)
     try {
-      final supabaseUrl = dotenv.env['SUPABASE_URL'];
+      final supabaseUrl = const String.fromEnvironment('SUPABASE_URL').isNotEmpty
+          ? const String.fromEnvironment('SUPABASE_URL')
+          : dotenv.env['SUPABASE_URL'];
       if (supabaseUrl != null) {
         final response = await http
             .get(Uri.parse('$supabaseUrl/rest/v1/'))

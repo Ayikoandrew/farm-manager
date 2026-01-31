@@ -17,9 +17,21 @@ import 'utils/error_sanitizer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+  
+  // Load .env file if it exists (local development)
+  // On deployed apps, env vars come from --dart-define-from-file at compile time
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (_) {
+    // .env file doesn't exist in production, that's okay
+    // Variables are provided via --dart-define at compile time
+  }
 
-  GoogleSignIn.instance.initialize(clientId: dotenv.env['GOOGLE_WEB_CLIENT']);
+  GoogleSignIn.instance.initialize(
+    clientId: const String.fromEnvironment('GOOGLE_WEB_CLIENT').isNotEmpty
+        ? const String.fromEnvironment('GOOGLE_WEB_CLIENT')
+        : dotenv.env['GOOGLE_WEB_CLIENT'],
+  );
 
   _setupErrorHandling();
 
