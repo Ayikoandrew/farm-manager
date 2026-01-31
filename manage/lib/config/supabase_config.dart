@@ -1,26 +1,18 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../utils/env_helper.dart';
 
 class SupabaseConfig {
-  // Use compile-time env (--dart-define) with fallback to dotenv (local .env file)
-  static const _compileTimeUrl = String.fromEnvironment('SUPABASE_URL');
-  static const _compileTimeKey = String.fromEnvironment('SUPABASE_ANON_KEY');
-
   late final String supabaseUrl;
   late final String supabaseAnonKey;
 
   SupabaseConfig() {
-    supabaseUrl = _compileTimeUrl.isNotEmpty
-        ? _compileTimeUrl
-        : (dotenv.env['SUPABASE_URL'] ?? '');
-    supabaseAnonKey = _compileTimeKey.isNotEmpty
-        ? _compileTimeKey
-        : (dotenv.env['SUPABASE_ANON_KEY'] ?? '');
+    supabaseUrl = EnvHelper.getOrDefault('SUPABASE_URL', '');
+    supabaseAnonKey = EnvHelper.getOrDefault('SUPABASE_ANON_KEY', '');
 
     // Debug: log which source is being used
     debugPrint(
-      'Supabase URL source: ${_compileTimeUrl.isNotEmpty ? "compile-time" : "dotenv"}',
+      'Supabase URL source: ${EnvHelper.isDotenvInitialized ? "dotenv" : "compile-time"}',
     );
     debugPrint(
       'Supabase URL: ${supabaseUrl.isNotEmpty ? "${supabaseUrl.substring(0, 20)}..." : "EMPTY!"}',
