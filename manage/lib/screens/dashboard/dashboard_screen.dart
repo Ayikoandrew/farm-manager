@@ -337,7 +337,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     // Get current user's role for the active farm
     final user = ref.watch(currentUserProvider).value;
     final userRole = user?.activeRole ?? UserRole.worker;
-    
+
     // Define all actions with their required minimum role
     final allActions = <({_QuickAction action, UserRole minRole})>[
       (
@@ -417,6 +417,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           icon: Icons.psychology,
           color: const Color(0xFF6366F1),
           onTap: () => coordinator.push(MLRoute()),
+          badge: 'In Progress',
         ),
         minRole: UserRole.manager, // Manager, owner only
       ),
@@ -431,7 +432,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         minRole: UserRole.owner, // Owner only
       ),
     ];
-    
+
     // Filter actions based on user role
     final actions = allActions
         .where((item) => _hasAccessToAction(userRole, item.minRole))
@@ -704,7 +705,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       },
     );
   }
-  
+
   /// Check if user role has access to an action based on minimum required role
   bool _hasAccessToAction(UserRole userRole, UserRole minRole) {
     // Role hierarchy: owner > manager > vet > worker
@@ -714,10 +715,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       UserRole.vet: 2,
       UserRole.worker: 1,
     };
-    
+
     final userLevel = roleHierarchy[userRole] ?? 1;
     final requiredLevel = roleHierarchy[minRole] ?? 1;
-    
+
     return userLevel >= requiredLevel;
   }
 }
@@ -774,6 +775,7 @@ class _QuickAction extends StatelessWidget {
   final IconData icon;
   final Color color;
   final VoidCallback onTap;
+  final String? badge;
 
   const _QuickAction({
     required this.title,
@@ -781,6 +783,7 @@ class _QuickAction extends StatelessWidget {
     required this.icon,
     required this.color,
     required this.onTap,
+    this.badge,
   });
 
   @override
@@ -790,16 +793,18 @@ class _QuickAction extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                backgroundColor: color.withValues(alpha: 0.2),
-                radius: 16,
-                child: Icon(icon, color: color, size: 16),
-              ),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    backgroundColor: color.withValues(alpha: 0.2),
+                    radius: 16,
+                    child: Icon(icon, color: color, size: 16),
+                  ),
               const SizedBox(height: 4),
               Flexible(
                 child: Text(
@@ -823,7 +828,29 @@ class _QuickAction extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ],
-          ),
+              ),
+            ),
+            if (badge != null)
+              Positioned(
+                top: 4,
+                right: 4,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.orange,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    badge!,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );

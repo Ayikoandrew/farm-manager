@@ -819,7 +819,11 @@ class AuthRepository {
             // Handle case where roles might be a JSON string
             try {
               final parsed = rolesData.startsWith('[')
-                  ? (rolesData.replaceAll('[', '').replaceAll(']', '').replaceAll('"', '').split(','))
+                  ? (rolesData
+                        .replaceAll('[', '')
+                        .replaceAll(']', '')
+                        .replaceAll('"', '')
+                        .split(','))
                   : [rolesData];
               roles = parsed
                   .map((r) => UserRoleExtension.fromString(r.trim()))
@@ -867,12 +871,12 @@ class AuthRepository {
   Stream<List<FarmMember>> watchFarmMembers(String farmId) {
     return watchFarmMembersWithInitial(farmId);
   }
-  
+
   /// Get farm members stream with immediate initial value
   Stream<List<FarmMember>> watchFarmMembersWithInitial(String farmId) async* {
     // Emit initial value immediately
     yield await getFarmMembers(farmId);
-    
+
     // Then poll periodically every 30 seconds for updates
     await for (final _ in Stream.periodic(const Duration(seconds: 30))) {
       yield await getFarmMembers(farmId);
