@@ -1,0 +1,22 @@
+# Ignore backend directory for now
+backend/
+
+# Flutter/Dart
+manage/.dart_tool/
+manage/.packages
+manage/build/
+manage/.flutter-plugins
+manage/.flutter-plugins-dependencies
+manage/*.iml
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+    <base href="$FLUTTER_BASE_HREF" />
+
+    <meta charset="UTF-8" />
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+
+    <!-- SEO Meta Tags -->
+    <meta
+      name="description"
+      content="Farm Manager - Comprehensive livestock management application. Track animals, feeding schedules, weight records, breeding history, and get ML-powered insights."
+    />
+    <meta
+      name="keywords"
+      content="farm management, livestock, animal tracking, agriculture, farming app, cattle, sheep, goats, pigs, poultry, feeding schedule, weight tracking, breeding records"
+    />
+    <meta name="author" content="Farm Manager Team" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="Farm Manager - Livestock Management App"
+    />
+    <meta
+      property="og:description"
+      content="Comprehensive livestock management application. Track animals, feeding schedules, weight records, and breeding history."
+    />
+    <meta property="og:image" content="icons/Icon-512.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Farm Manager - Livestock Management App"
+    />
+    <meta
+      name="twitter:description"
+      content="Comprehensive livestock management application. Track animals, feeding schedules, weight records, and breeding history."
+    />
+    <meta name="twitter:image" content="icons/Icon-512.png" />
+
+    <!-- iOS meta tags & icons -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="Farm Manager" />
+    <link rel="apple-touch-icon" href="icons/Icon-192.png" />
+
+    <!-- Favicon - Cow Emoji 🐰 -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐰</text></svg>"
+    />
+
+    <title>Farm Manager</title>
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- Canonical URL - Update with your actual domain -->
+    <link rel="canonical" href="https://www.farmmanager.com/" />
+  </head>
+  <body>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #111418;
+      }
+      .loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #0d1210 0%, #111418 100%);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .loading-spinner {
+        width: 80px;
+        height: 80px;
+        border: 4px solid rgba(255, 255, 255, 0.2);
+        border-left-color: #80cbc4;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .loading-spinner .emoji {
+        font-size: 40px;
+        animation: counter-spin 1s linear infinite,
+          bounce 0.6s ease-in-out infinite;
+      }
+      .loading-text {
+        margin-top: 20px;
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 500;
+      }
+      .loading-subtitle {
+        margin-top: 8px;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 13px;
+      }
+      .loading-emoji {
+        font-size: 25px;
+        margin-bottom: 20px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes counter-spin {
+        to {
+          transform: rotate(-360deg);
+        }
+      }
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.15);
+        }
+      }
+    </style>
+    <div id="loading" class="loading">
+      <div class="loading-spinner"><span class="emoji">🐰</span></div>
+      <div class="loading-text">manage</div>
+      <div id="loading-status" class="loading-subtitle">Loading...</div>
+    </div>
+
+    <script>
+      {{flutter_js}}
+      {{flutter_build_config}}
+
+      const loadingStatus = document.getElementById("loading-status");
+      const loadingDiv = document.getElementById("loading");
+
+      _flutter.loader.load({
+        onEntrypointLoaded: async function (engineInitializer) {
+          loadingStatus.textContent = "Initializing...";
+          const appRunner = await engineInitializer.initializeEngine();
+
+          loadingStatus.textContent = "Starting app...";
+          await appRunner.runApp();
+
+          // Remove loading screen after app starts
+          loadingDiv.style.opacity = "0";
+          loadingDiv.style.transition = "opacity 0.3s ease";
+          setTimeout(() => loadingDiv.remove(), 300);
+        },
+      });
+    </script>
+  </body>
+</html>
