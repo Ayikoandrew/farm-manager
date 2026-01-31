@@ -257,7 +257,7 @@ final farmMembersProvider = StreamProvider<List<FarmMember>>((ref) {
   }
 
   final repository = ref.watch(authRepositoryProvider);
-  return repository.watchFarmMembers(user.activeFarmId!);
+  return repository.watchFarmMembersWithInitial(user.activeFarmId!);
 });
 
 /// Provider for removing a farm member
