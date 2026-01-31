@@ -16,6 +16,7 @@ A comprehensive roadmap for enhancing the Farm Manager application.
 8. [Hardware Integration](#8-hardware-integration)
 9. [UI/UX Improvements](#9-uiux-improvements)
 10. [Localization](#10-localization)
+11. [Marketplace](#11-marketplace)
 
 ---
 
@@ -482,6 +483,80 @@ Support for multiple languages and regional formats.
 - Community features
 - API for third-party integrations
 - Enterprise features (multi-farm management)
+- **Marketplace launch**
+
+---
+
+## 11. Marketplace
+
+### Overview
+A peer-to-peer marketplace enabling farmers to buy and sell livestock, genetics, supplies, and services directly within the Farm Manager ecosystem.
+
+### Competitive Advantage
+Unlike generic marketplaces, Farm Manager has verified data that builds buyer trust:
+- ✅ Complete health records and vaccination history
+- ✅ Verified weight progression over time
+- ✅ Breeding lineage and genetics
+- ✅ Feed conversion ratios and growth metrics
+
+### 11.1 Livestock Marketplace
+- [ ] List animals for sale with verified records
+  - [ ] Auto-populate from existing animal data
+  - [ ] Health certificate generation
+  - [ ] Weight history graph display
+- [ ] Search and filter listings
+  - [ ] By species, breed, age, location
+  - [ ] By health score, weight class
+- [ ] Buyer verification
+- [ ] Secure messaging between buyers/sellers
+- [ ] Transaction history
+
+### 11.2 Genetics & Breeding Stock
+- [ ] Semen and embryo listings
+- [ ] Breeding stock with lineage verification
+- [ ] AI technician service bookings
+- [ ] Genetic trait documentation
+
+### 11.3 Supplies & Equipment
+- [ ] Feed and supplements marketplace
+- [ ] Veterinary supplies
+- [ ] Farm equipment listings
+- [ ] Bulk buying groups
+
+### 11.4 Services Marketplace
+- [ ] Veterinary services
+- [ ] Transport services
+- [ ] AI/breeding services
+- [ ] Consultation services
+- [ ] Service provider ratings & reviews
+
+### 11.5 Payments & Logistics
+- [ ] In-app payment integration
+  - [ ] Mobile money (MTN, Airtel)
+  - [ ] Bank transfers
+  - [ ] Escrow for large transactions
+- [ ] Delivery coordination
+- [ ] Insurance options for livestock transport
+- [ ] Transaction fee structure (2-5%)
+
+### Technical Considerations
+- Separate marketplace database tables
+- Real-time listing updates
+- Location-based search with geofencing
+- Push notifications for matches
+- Rating and review system
+- Fraud detection mechanisms
+
+### Revenue Model
+| Revenue Stream | Rate |
+|----------------|------|
+| Livestock sales commission | 3-5% |
+| Genetics sales commission | 5% |
+| Supplies (featured listings) | Fixed fee |
+| Service bookings | 10% |
+| Premium seller badges | Subscription |
+
+### Priority: **LOW** (Future Phase)
 
 ---
 
@@ -500,7 +575,7 @@ When implementing features:
 
 | Feature | Status | Priority | Target |
 |---------|--------|----------|--------|
-| Authentication | � Complete | HIGH | Phase 1 |
+| Authentication | ✅ Complete | HIGH | Phase 1 |
 | Offline-First | 🔴 Not Started | HIGH | Phase 1 |
 | ML Analytics | 🟡 In Progress | MEDIUM | Phase 2 |
 | Notifications | 🔴 Not Started | MEDIUM | Phase 1 |
@@ -510,6 +585,7 @@ When implementing features:
 | Hardware Integration | 🔴 Not Started | LOW | Phase 3 |
 | UI/UX Improvements | 🟡 Ongoing | MEDIUM | All |
 | Localization | 🔴 Not Started | LOW | Phase 4 |
+| **Marketplace** | 🔴 Not Started | LOW | Phase 4+ |
 
 **Legend:**
 - 🔴 Not Started
@@ -518,4 +594,4 @@ When implementing features:
 
 ---
 
-*Last Updated: January 11, 2026*
+*Last Updated: January 31, 2026*
