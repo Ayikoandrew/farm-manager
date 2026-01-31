@@ -799,6 +799,7 @@ class _QuickAction extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   CircleAvatar(
                     backgroundColor: color.withValues(alpha: 0.2),
