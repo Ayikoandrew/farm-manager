@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../utils/env_helper.dart';
 
 import 'connectivity_web.dart'
     if (dart.library.io) 'connectivity_stub.dart'
@@ -61,10 +61,7 @@ class ConnectivityService {
 
     // Verify actual internet access with HTTP request to Supabase (has CORS configured)
     try {
-      final supabaseUrl =
-          const String.fromEnvironment('SUPABASE_URL').isNotEmpty
-          ? const String.fromEnvironment('SUPABASE_URL')
-          : dotenv.env['SUPABASE_URL'];
+      final supabaseUrl = EnvHelper.get('SUPABASE_URL');
       if (supabaseUrl != null) {
         final response = await http
             .get(Uri.parse('$supabaseUrl/rest/v1/'))

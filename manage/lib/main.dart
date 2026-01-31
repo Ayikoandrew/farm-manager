@@ -13,6 +13,7 @@ import 'providers/connectivity_provider.dart';
 import 'providers/theme_provider.dart';
 import 'router/app_router.dart';
 import 'services/connectivity_service.dart';
+import 'utils/env_helper.dart';
 import 'utils/error_sanitizer.dart';
 
 void main() async {
@@ -22,16 +23,17 @@ void main() async {
   // On deployed apps, env vars come from --dart-define-from-file at compile time
   try {
     await dotenv.load(fileName: ".env");
+    EnvHelper.markDotenvInitialized();
   } catch (_) {
     // .env file doesn't exist in production, that's okay
     // Variables are provided via --dart-define at compile time
   }
 
-  GoogleSignIn.instance.initialize(
-    clientId: const String.fromEnvironment('GOOGLE_WEB_CLIENT').isNotEmpty
-        ? const String.fromEnvironment('GOOGLE_WEB_CLIENT')
-        : dotenv.env['GOOGLE_WEB_CLIENT'],
-  );
+  // Get Google client ID
+  final googleClientId = EnvHelper.get('GOOGLE_WEB_CLIENT');
+  if (googleClientId != null && googleClientId.isNotEmpty) {
+    GoogleSignIn.instance.initialize(clientId: googleClientId);
+  }
 
   _setupErrorHandling();
 
