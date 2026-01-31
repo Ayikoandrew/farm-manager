@@ -626,7 +626,7 @@ Optimize app performance for smooth user experience across web and mobile platfo
 - Flutter DevTools (Performance tab)
 - Chrome DevTools (Memory, Performance)
 - Lighthouse audits
-- Firebase Performance Monitoring
+- Supabase Performance Monitoring
 
 ### Priority: **MEDIUM** (Phase 3)
 
