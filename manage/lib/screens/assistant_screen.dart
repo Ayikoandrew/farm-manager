@@ -17,7 +17,8 @@ class AssistantScreen extends ConsumerStatefulWidget {
 }
 
 class _AssistantScreenState extends ConsumerState<AssistantScreen> {
-  final String _apiKey = const String.fromEnvironment('GEMINI_API_KEY').isNotEmpty
+  final String _apiKey =
+      const String.fromEnvironment('GEMINI_API_KEY').isNotEmpty
       ? const String.fromEnvironment('GEMINI_API_KEY')
       : (dotenv.env['GEMINI_API_KEY'] ?? "");
   GenUiConversation? _conversation;

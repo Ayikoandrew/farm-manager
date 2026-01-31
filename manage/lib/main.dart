@@ -17,7 +17,7 @@ import 'utils/error_sanitizer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Load .env file if it exists (local development)
   // On deployed apps, env vars come from --dart-define-from-file at compile time
   try {
