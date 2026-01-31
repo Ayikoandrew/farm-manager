@@ -55,3 +55,4 @@ app.*.map.json
 password.txt
 .vscode/mcp.json
 weight_records_rows.json
+supabase/schema.sql
