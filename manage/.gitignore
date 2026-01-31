@@ -46,8 +46,10 @@ app.*.map.json
 
 # Environment files
 .env
-.env.*
-*.env
+.env.local
+.env.production
+# Allow .env.example as a template
+!.env.example
 
 # Sensitive files
 password.txt
