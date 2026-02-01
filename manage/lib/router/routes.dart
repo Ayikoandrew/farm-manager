@@ -10,6 +10,8 @@ export '../screens/financial/budget_screen.dart';
 export '../screens/financial/financial_screen.dart';
 export '../screens/health/health_screen.dart';
 export '../screens/landing/landing_page.dart';
+export '../screens/legal/privacy_policy_screen.dart';
+export '../screens/legal/terms_of_service_screen.dart';
 export '../screens/ml/ml_analytics_screen.dart';
 export '../screens/notifications/notifications_screen.dart';
 export '../screens/payments/payment_history_screen.dart';

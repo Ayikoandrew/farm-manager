@@ -213,6 +213,28 @@ class DocumentationRoute extends AppRoute {
   }
 }
 
+// Privacy Policy Route - /privacy
+class PrivacyPolicyRoute extends AppRoute {
+  @override
+  Uri toUri() => Uri.parse('/privacy');
+
+  @override
+  Widget build(Coordinator<AppRoute> coord, BuildContext context) {
+    return const PrivacyPolicyScreen();
+  }
+}
+
+// Terms of Service Route - /terms
+class TermsOfServiceRoute extends AppRoute {
+  @override
+  Uri toUri() => Uri.parse('/terms');
+
+  @override
+  Widget build(Coordinator<AppRoute> coord, BuildContext context) {
+    return const TermsOfServiceScreen();
+  }
+}
+
 // Auth Routes
 // Login Route - /login
 class LoginRoute extends AppRoute {
