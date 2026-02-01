@@ -181,7 +181,7 @@ class SettingsScreen extends ConsumerWidget {
                       title: 'Terms of Service',
                       subtitle: 'Read our terms and conditions',
                       onTap: () {
-                        // Show terms
+                        coordinator.push(TermsOfServiceRoute());
                       },
                     ),
                     _SettingsTile(
@@ -190,7 +190,7 @@ class SettingsScreen extends ConsumerWidget {
                       title: 'Privacy Policy',
                       subtitle: 'How we handle your data',
                       onTap: () {
-                        // Show privacy policy
+                        coordinator.push(PrivacyPolicyRoute());
                       },
                     ),
                   ],
