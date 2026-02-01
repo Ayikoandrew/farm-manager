@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_providers.dart';
@@ -499,34 +500,37 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         },
                       ),
                       Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _acceptedTerms = !_acceptedTerms;
-                            });
-                          },
-                          child: Text.rich(
-                            TextSpan(
-                              text: 'I agree to the ',
-                              style: theme.textTheme.bodyMedium,
-                              children: [
-                                TextSpan(
-                                  text: 'Terms of Service',
-                                  style: TextStyle(
-                                    color: theme.colorScheme.primary,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                        child: Text.rich(
+                          TextSpan(
+                            text: 'I agree to the ',
+                            style: theme.textTheme.bodyMedium,
+                            children: [
+                              TextSpan(
+                                text: 'Terms of Service',
+                                style: TextStyle(
+                                  color: theme.colorScheme.primary,
+                                  fontWeight: FontWeight.w500,
+                                  decoration: TextDecoration.underline,
                                 ),
-                                const TextSpan(text: ' and '),
-                                TextSpan(
-                                  text: 'Privacy Policy',
-                                  style: TextStyle(
-                                    color: theme.colorScheme.primary,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    coordinator.push(TermsOfServiceRoute());
+                                  },
+                              ),
+                              const TextSpan(text: ' and '),
+                              TextSpan(
+                                text: 'Privacy Policy',
+                                style: TextStyle(
+                                  color: theme.colorScheme.primary,
+                                  fontWeight: FontWeight.w500,
+                                  decoration: TextDecoration.underline,
                                 ),
-                              ],
-                            ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    coordinator.push(PrivacyPolicyRoute());
+                                  },
+                              ),
+                            ],
                           ),
                         ),
                       ),
