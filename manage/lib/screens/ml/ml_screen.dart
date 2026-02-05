@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../utils/seo_helper.dart';
 import '../../providers/providers.dart';
-import '../../utils/export_service.dart';
 
 class MLScreen extends ConsumerStatefulWidget {
   const MLScreen({super.key});
@@ -265,7 +264,7 @@ class _MLScreenState extends ConsumerState<MLScreen> {
                   context,
                   'Records',
                   '$totalRecords',
-                  Icons.storage,
+                  Icons.data_usage,
                 ),
               ],
             ),
