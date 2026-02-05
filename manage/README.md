@@ -42,6 +42,15 @@ A comprehensive livestock management application built with Flutter for tracking
 - Breeding success predictions
 - Feed optimization recommendations
 
+### 🔌 Hardware Integration (R&D)
+We're actively researching and developing custom IoT hardware solutions:
+
+- **Custom IoT Scales** - Bluetooth/WiFi-enabled weighing scales designed specifically for livestock, with automatic weight capture and sync to the app
+- **RFID Readers** - Custom NFC/RFID tag readers for quick animal identification and record lookup
+- **Integration Goals**: Seamless data flow from physical devices → Farm Manager app → Cloud analytics
+
+> 🧪 *Currently in research phase. Hardware prototypes and documentation coming soon.*
+
 ## 🏗️ Architecture
 
 ```
@@ -162,7 +171,8 @@ See [ROADMAP.md](ROADMAP.md) for detailed future plans including:
 - 💰 Financial tracking
 - 🏥 Health management module
 - 📊 Advanced reporting
-- 🔗 Hardware integration (scales, RFID)
+- 🔗 Hardware integration (IoT scales, RFID readers)
+- 🛒 Livestock marketplace (see [LIVESTOCK_MARKETPLACE_ROADMAP.md](LIVESTOCK_MARKETPLACE_ROADMAP.md))
 
 ## 🤝 Contributing
 
