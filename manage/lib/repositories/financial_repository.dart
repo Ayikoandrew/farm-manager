@@ -284,7 +284,6 @@ class FinancialRepository {
   /// Get per-animal financial tracking
   Future<AnimalFinancials> getAnimalFinancials(
     String animalId,
-    String animalTagId,
   ) async {
     final response = await _client
         .from(_transactionsTable)
@@ -320,7 +319,6 @@ class FinancialRepository {
 
     return AnimalFinancials(
       animalId: animalId,
-      animalTagId: animalTagId,
       totalInvestment: totalInvestment,
       totalIncome: totalIncome,
       feedCosts: feedCosts,
