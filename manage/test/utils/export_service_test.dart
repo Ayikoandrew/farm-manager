@@ -85,7 +85,7 @@ void main() {
     test('generateGrowthCsv generates headers for empty list', () {
       final csv = exportService.generateGrowthCsv([], {});
 
-      expect(csv, contains('Animal Tag ID'));
+      expect(csv, contains('Animal Name'));
       expect(csv, contains('Animal Breed'));
       expect(csv, contains('Date'));
       expect(csv, contains('Weight'));
@@ -364,7 +364,7 @@ void main() {
           status: BreedingStatus.pregnant,
           breedingDate: DateTime(2024, 1, 12),
           sireId: 'boar-1',
-          expectedFarrowDate: DateTime(2024, 5, 5),
+          expectedDeliveryDate: DateTime(2024, 5, 5),
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         ),
@@ -440,7 +440,6 @@ void main() {
 
       final csv = exportService.generateGrowthCsv(animals, weightsByAnimal);
 
-      expect(csv, contains('PIG-001'));
       expect(csv, contains('Large White'));
       expect(csv, contains('85.5'));
       expect(csv, contains('75.0'));
@@ -469,7 +468,7 @@ void main() {
       );
 
       // Should only have headers
-      expect(csv, contains('Animal Tag ID'));
+      expect(csv, contains('Animal Name'));
       expect(csv, isNot(contains('COW-001')));
     });
   });
@@ -533,7 +532,6 @@ void main() {
           category: 'Animal Sales',
           amount: 1500000.0,
           description: 'Sold pig',
-          recordedBy: 'test-user',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         ),
@@ -556,7 +554,6 @@ void main() {
           category: 'Animal Sales',
           amount: 1500000.0,
           description: 'Sold pig',
-          recordedBy: 'test-user',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         ),
@@ -568,7 +565,6 @@ void main() {
           category: 'Feed',
           amount: 200000.0,
           description: 'Bought pig feed',
-          recordedBy: 'test-user',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         ),
@@ -613,7 +609,6 @@ void main() {
           category: 'Animal Sales',
           amount: 1500000.0,
           description: 'Sold pig',
-          recordedBy: 'test-user',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         ),
@@ -650,7 +645,6 @@ void main() {
           category: 'Animal Sales',
           amount: 1500000.0,
           description: 'Sold pig',
-          recordedBy: 'test-user',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         ),
@@ -673,7 +667,6 @@ void main() {
           category: 'Animal Sales',
           amount: 1500000.0,
           description: 'Sold pig',
-          recordedBy: 'test-user',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         ),

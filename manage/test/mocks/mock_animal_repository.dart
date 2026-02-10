@@ -80,8 +80,8 @@ class MockAnimalRepository {
     if (animal.status == AnimalStatus.pregnant) {
       final now = DateTime.now();
       final estimatedBreedingDate = now.subtract(const Duration(days: 60));
-      final expectedFarrowDate = estimatedBreedingDate.add(
-        const Duration(days: BreedingRecord.gestationDays),
+      final expectedDeliveryDate = estimatedBreedingDate.add(
+        const Duration(days: GestationPeriods.pig),
       );
 
       final breedingRecord = BreedingRecord(
@@ -90,7 +90,7 @@ class MockAnimalRepository {
         animalId: animalId,
         heatDate: estimatedBreedingDate.subtract(const Duration(days: 3)),
         breedingDate: estimatedBreedingDate,
-        expectedFarrowDate: expectedFarrowDate,
+        expectedDeliveryDate: expectedDeliveryDate,
         status: BreedingStatus.pregnant,
         notes: 'Auto-created breeding record for pregnant animal',
         createdAt: now,

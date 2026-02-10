@@ -6,11 +6,7 @@ import 'package:manage/screens/auth/profile_screen.dart';
 void main() {
   group('ProfileScreen', () {
     Widget createTestWidget() {
-      return ProviderScope(
-        child: MaterialApp(
-          home: const ProfileScreen(),
-        ),
-      );
+      return ProviderScope(child: MaterialApp(home: const ProfileScreen()));
     }
 
     testWidgets('creates ProfileScreen successfully', (tester) async {
@@ -40,7 +36,7 @@ void main() {
       await tester.pump();
 
       // Should have edit icon button in AppBar
-      expect(find.byIcon(Icons.edit), findsOneWidget);
+      expect(find.byIcon(Icons.edit_outlined), findsOneWidget);
     });
 
     testWidgets('shows content structure after pump', (tester) async {

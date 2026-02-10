@@ -210,8 +210,8 @@ void main() {
       expect(farmHealthStatsProvider, isA<FutureProvider>());
     });
 
-    test('financialSummaryProvider is a FutureProvider', () {
-      expect(financialSummaryProvider, isA<FutureProvider>());
+    test('financialSummaryProvider is a StreamProvider', () {
+      expect(financialSummaryProvider, isA<StreamProvider>());
     });
   });
 

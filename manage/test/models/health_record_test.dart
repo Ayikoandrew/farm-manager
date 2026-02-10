@@ -169,8 +169,8 @@ void main() {
       final map = medicationRecord.toSupabase();
 
       expect(map['type'], 'medication');
-      expect(map['symptoms'], ['coughing', 'fever', 'loss of appetite']);
-      expect(map['medication_name'], 'Amoxicillin');
+      expect(map.containsKey('symptoms'), isFalse);
+      expect(map['medication'], 'Amoxicillin');
       expect(map['dosage'], '500mg');
     });
 

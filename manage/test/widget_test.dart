@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:manage/router/app_router.dart';
-import 'package:manage/screens/dashboard_screen.dart';
+import 'package:manage/screens/dashboard/dashboard_screen.dart';
 
 void main() {
   setUpAll(() {

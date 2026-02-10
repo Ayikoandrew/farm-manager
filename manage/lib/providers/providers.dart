@@ -434,13 +434,12 @@ final monthBudgetWithComparisonProvider =
     });
 
 final animalFinancialsProvider =
-    FutureProvider.family<AnimalFinancials, (String, String)>((
+    FutureProvider.family<AnimalFinancials, String>((
       ref,
-      params,
+      animalId,
     ) async {
       final repository = ref.watch(financialRepositoryProvider);
-      final (animalId, animalTagId) = params;
-      return repository.getAnimalFinancials(animalId, animalTagId);
+      return repository.getAnimalFinancials(animalId);
     });
 
 final reportDateRangeProvider =

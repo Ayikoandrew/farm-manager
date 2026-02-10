@@ -89,11 +89,9 @@ void main() {
         category: ExpenseCategory.feed.name,
         amount: 500000.0,
         description: 'Monthly pig feed purchase',
-        vendorOrBuyer: 'Feed Supplies Ltd',
         paymentMethod: PaymentMethod.mobileMoney,
         referenceNumber: 'INV-2026-001',
         notes: 'Bulk purchase discount applied',
-        recordedBy: 'user-001',
         createdAt: now,
         updatedAt: now,
       );
@@ -106,11 +104,8 @@ void main() {
         category: IncomeCategory.animalSale.name,
         amount: 1500000.0,
         animalId: 'animal-001',
-        animalTagId: 'PIG-001',
         description: 'Sale of mature pig',
-        vendorOrBuyer: 'Local Butcher Shop',
         paymentMethod: PaymentMethod.cash,
-        recordedBy: 'user-001',
         createdAt: now,
         updatedAt: now,
       );
@@ -121,7 +116,6 @@ void main() {
       expect(expenseTransaction.type, TransactionType.expense);
       expect(expenseTransaction.category, 'feed');
       expect(expenseTransaction.amount, 500000.0);
-      expect(expenseTransaction.vendorOrBuyer, 'Feed Supplies Ltd');
       expect(expenseTransaction.paymentMethod, PaymentMethod.mobileMoney);
       expect(expenseTransaction.referenceNumber, 'INV-2026-001');
     });
@@ -132,7 +126,6 @@ void main() {
       expect(incomeTransaction.category, 'animalSale');
       expect(incomeTransaction.amount, 1500000.0);
       expect(incomeTransaction.animalId, 'animal-001');
-      expect(incomeTransaction.animalTagId, 'PIG-001');
     });
 
     test('isExpense returns correct value', () {
@@ -182,15 +175,12 @@ void main() {
         category: ExpenseCategory.other.name,
         amount: 10000.0,
         description: 'Miscellaneous expense',
-        recordedBy: 'user-001',
         createdAt: now,
         updatedAt: now,
       );
 
       expect(minimalTransaction.animalId, isNull);
-      expect(minimalTransaction.vendorOrBuyer, isNull);
       expect(minimalTransaction.paymentMethod, isNull);
-      expect(minimalTransaction.receiptUrl, isNull);
     });
 
     test('formattedAmount includes sign for income and expense', () {
@@ -325,7 +315,6 @@ void main() {
     test('should create animal financials with all properties', () {
       final financials = AnimalFinancials(
         animalId: 'animal-001',
-        animalTagId: 'PIG-001',
         totalInvestment: 500000.0,
         totalIncome: 1500000.0,
         feedCosts: 300000.0,
@@ -335,7 +324,6 @@ void main() {
       );
 
       expect(financials.animalId, 'animal-001');
-      expect(financials.animalTagId, 'PIG-001');
       expect(financials.totalInvestment, 500000.0);
       expect(financials.totalIncome, 1500000.0);
       expect(financials.netValue, 1000000.0);
@@ -344,7 +332,6 @@ void main() {
     test('should calculate ROI correctly', () {
       final financials = AnimalFinancials(
         animalId: 'animal-001',
-        animalTagId: 'PIG-001',
         totalInvestment: 500000.0,
         totalIncome: 1500000.0,
         feedCosts: 300000.0,
@@ -360,7 +347,6 @@ void main() {
     test('isProfitable returns correct value', () {
       final profitableAnimal = AnimalFinancials(
         animalId: 'animal-001',
-        animalTagId: 'PIG-001',
         totalInvestment: 500000.0,
         totalIncome: 1500000.0,
         feedCosts: 300000.0,
@@ -371,7 +357,6 @@ void main() {
 
       final unprofitableAnimal = AnimalFinancials(
         animalId: 'animal-002',
-        animalTagId: 'PIG-002',
         totalInvestment: 500000.0,
         totalIncome: 300000.0,
         feedCosts: 300000.0,

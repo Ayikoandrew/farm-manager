@@ -168,17 +168,10 @@ class MockFinancialRepository {
   }
 
   /// Get animal financials
-  Future<AnimalFinancials> getAnimalFinancials(
-    String animalId,
-    String animalTagId,
-  ) async {
+  Future<AnimalFinancials> getAnimalFinancials(String animalId) async {
     final data = db
         .select(_table)
-        .where(
-          (json) =>
-              json['animal_id'] == animalId ||
-              json['animal_tag_id'] == animalTagId,
-        )
+        .where((json) => json['animal_id'] == animalId)
         .toList();
 
     double totalIncome = 0;
@@ -223,13 +216,10 @@ void main() {
     String category = 'feed',
     double amount = 100.0,
     String? animalId,
-    String? animalTagId,
     String description = 'Test Transaction',
-    String? vendorOrBuyer,
     models.PaymentMethod? paymentMethod,
     String? referenceNumber,
     String? notes,
-    String recordedBy = 'user-1',
   }) {
     return models.Transaction(
       id: id,
@@ -239,13 +229,10 @@ void main() {
       category: category,
       amount: amount,
       animalId: animalId,
-      animalTagId: animalTagId,
       description: description,
-      vendorOrBuyer: vendorOrBuyer,
       paymentMethod: paymentMethod,
       referenceNumber: referenceNumber,
       notes: notes,
-      recordedBy: recordedBy,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
@@ -646,7 +633,6 @@ void main() {
           createTestTransaction(
             id: 't1',
             animalId: 'animal-1',
-            animalTagId: 'TAG001',
             type: models.TransactionType.expense,
             category: 'feed',
             amount: 500.0,
@@ -656,17 +642,13 @@ void main() {
           createTestTransaction(
             id: 't2',
             animalId: 'animal-1',
-            animalTagId: 'TAG001',
             type: models.TransactionType.expense,
             category: 'veterinary',
             amount: 200.0,
           ),
         );
 
-        final financials = await repository.getAnimalFinancials(
-          'animal-1',
-          'TAG001',
-        );
+        final financials = await repository.getAnimalFinancials('animal-1');
 
         expect(financials.totalInvestment, 700.0);
       });
@@ -676,17 +658,13 @@ void main() {
           createTestTransaction(
             id: 't1',
             animalId: 'animal-1',
-            animalTagId: 'TAG001',
             type: models.TransactionType.income,
             category: 'animalSale',
             amount: 3000.0,
           ),
         );
 
-        final financials = await repository.getAnimalFinancials(
-          'animal-1',
-          'TAG001',
-        );
+        final financials = await repository.getAnimalFinancials('animal-1');
 
         expect(financials.totalIncome, 3000.0);
       });
@@ -696,7 +674,6 @@ void main() {
         () async {
           final financials = await repository.getAnimalFinancials(
             'unknown-animal',
-            'TAG999',
           );
 
           expect(financials.totalIncome, 0.0);
