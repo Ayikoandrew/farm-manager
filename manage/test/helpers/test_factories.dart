@@ -183,8 +183,8 @@ class TestBreedingRecordFactory {
     BreedingStatus status = BreedingStatus.inHeat,
     DateTime? heatDate,
     DateTime? breedingDate,
-    DateTime? expectedFarrowDate,
-    DateTime? actualFarrowDate,
+    DateTime? expectedDeliveryDate,
+    DateTime? actualDeliveryDate,
     int? litterSize,
     String? notes,
   }) {
@@ -198,8 +198,8 @@ class TestBreedingRecordFactory {
       status: status,
       heatDate: heatDate ?? now,
       breedingDate: breedingDate,
-      expectedFarrowDate: expectedFarrowDate,
-      actualFarrowDate: actualFarrowDate,
+      expectedDeliveryDate: expectedDeliveryDate,
+      actualDeliveryDate: actualDeliveryDate,
       litterSize: litterSize,
       notes: notes,
       createdAt: now,
@@ -216,8 +216,8 @@ class TestBreedingRecordFactory {
     final now = DateTime.now();
     final heatDate = now.subtract(const Duration(days: 63));
     final breedingDate = now.subtract(const Duration(days: 60));
-    final expectedFarrowDate = breedingDate.add(
-      const Duration(days: BreedingRecord.gestationDays),
+    final expectedDeliveryDate = breedingDate.add(
+      const Duration(days: GestationPeriods.pig),
     );
 
     return create(
@@ -228,7 +228,7 @@ class TestBreedingRecordFactory {
       status: BreedingStatus.pregnant,
       heatDate: heatDate,
       breedingDate: breedingDate,
-      expectedFarrowDate: expectedFarrowDate,
+      expectedDeliveryDate: expectedDeliveryDate,
     );
   }
 
@@ -324,7 +324,6 @@ class TestTransactionFactory {
       animalId: animalId,
       paymentMethod: paymentMethod,
       notes: notes,
-      recordedBy: 'test-user',
       createdAt: now,
       updatedAt: now,
     );

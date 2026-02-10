@@ -35,15 +35,15 @@ class MockBreedingRepository {
     DateTime breedingDate,
     String? sireId,
   ) async {
-    final expectedFarrowDate = breedingDate.add(
-      const Duration(days: BreedingRecord.gestationDays),
+    final expectedDeliveryDate = breedingDate.add(
+      const Duration(days: GestationPeriods.pig),
     );
     db.update(
       _table,
       {
         'status': BreedingStatus.bred.name,
         'breeding_date': breedingDate.toIso8601String(),
-        'expected_farrow_date': expectedFarrowDate.toIso8601String(),
+        'expected_farrow_date': expectedDeliveryDate.toIso8601String(),
         'sire_id': sireId,
         'updated_at': DateTime.now().toIso8601String(),
       },
@@ -72,7 +72,7 @@ class MockBreedingRepository {
     db.update(
       _table,
       {
-        'status': BreedingStatus.farrowed.name,
+        'status': BreedingStatus.delivered.name,
         'actual_farrow_date': farrowDate.toIso8601String(),
         'litter_size': litterSize,
         'updated_at': DateTime.now().toIso8601String(),
@@ -178,8 +178,8 @@ void main() {
     String? sireId,
     DateTime? heatDate,
     DateTime? breedingDate,
-    DateTime? expectedFarrowDate,
-    DateTime? actualFarrowDate,
+    DateTime? expectedDeliveryDate,
+    DateTime? actualDeliveryDate,
     BreedingStatus status = BreedingStatus.inHeat,
     int? litterSize,
     String? notes,
@@ -191,8 +191,8 @@ void main() {
       sireId: sireId,
       heatDate: heatDate ?? DateTime.now(),
       breedingDate: breedingDate,
-      expectedFarrowDate: expectedFarrowDate,
-      actualFarrowDate: actualFarrowDate,
+      expectedDeliveryDate: expectedDeliveryDate,
+      actualDeliveryDate: actualDeliveryDate,
       status: status,
       litterSize: litterSize,
       notes: notes,
@@ -346,7 +346,7 @@ void main() {
           'breeding_records',
           where: {'id': record.id},
         );
-        expect(data!['status'], 'farrowed');
+        expect(data!['status'], 'delivered');
         expect(data['litter_size'], 12);
         final storedFarrowDate = DateTime.parse(data['actual_farrow_date']);
         expect(storedFarrowDate.day, farrowDate.day);
@@ -422,7 +422,7 @@ void main() {
             id: 'b1',
             farmId: 'farm-1',
             status: BreedingStatus.pregnant,
-            expectedFarrowDate: expectedFarrow,
+            expectedDeliveryDate: expectedFarrow,
           ),
         );
         await addBreedingRecordToDb(
@@ -462,7 +462,7 @@ void main() {
             id: 'b2',
             farmId: 'farm-1',
             status: BreedingStatus.pregnant,
-            expectedFarrowDate: DateTime.now().add(const Duration(days: 30)),
+            expectedDeliveryDate: DateTime.now().add(const Duration(days: 30)),
           ),
         );
 
@@ -494,7 +494,7 @@ void main() {
               id: 'b1',
               farmId: 'farm-1',
               status: BreedingStatus.pregnant,
-              expectedFarrowDate: inTwentyDays,
+              expectedDeliveryDate: inTwentyDays,
             ),
           );
           await addBreedingRecordToDb(
@@ -502,7 +502,7 @@ void main() {
               id: 'b2',
               farmId: 'farm-1',
               status: BreedingStatus.pregnant,
-              expectedFarrowDate: inSixtyDays,
+              expectedDeliveryDate: inSixtyDays,
             ),
           );
 

@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:manage/screens/dashboard_screen.dart';
+import 'package:manage/screens/dashboard/dashboard_screen.dart';
 
 void main() {
   group('DashboardScreen Widget Tests', () {
     Widget createTestWidget() {
-      return ProviderScope(
-        child: const MaterialApp(home: DashboardScreen()),
-      );
+      return ProviderScope(child: const MaterialApp(home: DashboardScreen()));
     }
 
     testWidgets('should display Farm Dashboard title in app bar', (
@@ -38,9 +36,7 @@ void main() {
   group('Dashboard Navigation', () {
     testWidgets('dashboard should be scrollable', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp(home: DashboardScreen()),
-        ),
+        ProviderScope(child: MaterialApp(home: DashboardScreen())),
       );
       await tester.pump();
 
@@ -53,14 +49,12 @@ void main() {
   group('Dashboard Stats Display', () {
     testWidgets('should show stats section when loaded', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp(home: DashboardScreen()),
-        ),
+        ProviderScope(child: MaterialApp(home: DashboardScreen())),
       );
-      
+
       // Just pump once to see initial state
       await tester.pump();
-      
+
       // Scaffold should be present
       expect(find.byType(Scaffold), findsOneWidget);
     });

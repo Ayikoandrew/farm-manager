@@ -54,18 +54,19 @@ void main() {
       final notification = AdminNotification(
         id: 'notif-1',
         type: 'member_joined',
-        recipientUserId: 'user-1',
+        userId: 'user-1',
         farmId: 'farm-1',
-        farmName: 'Test Farm',
+        title: 'New Member Joined',
+        message: 'John Doe joined the farm',
         createdAt: DateTime.now(),
         read: false,
       );
 
       expect(notification.id, 'notif-1');
       expect(notification.type, 'member_joined');
-      expect(notification.recipientUserId, 'user-1');
+      expect(notification.userId, 'user-1');
       expect(notification.farmId, 'farm-1');
-      expect(notification.farmName, 'Test Farm');
+      expect(notification.title, 'New Member Joined');
       expect(notification.read, isFalse);
     });
 
@@ -73,21 +74,20 @@ void main() {
       final notification = AdminNotification(
         id: 'notif-2',
         type: 'member_joined',
-        recipientUserId: 'user-1',
+        userId: 'user-1',
         farmId: 'farm-1',
-        farmName: 'Test Farm',
-        joinerUserId: 'joiner-1',
-        joinerName: 'John Doe',
-        joinerEmail: 'john@example.com',
-        joinerRole: 'worker',
+        title: 'New Member Joined',
+        message: 'John Doe joined as worker',
+        category: 'team',
+        actionUrl: '/farm/members',
+        metadata: {'role': 'worker'},
         createdAt: DateTime.now(),
         read: true,
       );
 
-      expect(notification.joinerUserId, 'joiner-1');
-      expect(notification.joinerName, 'John Doe');
-      expect(notification.joinerEmail, 'john@example.com');
-      expect(notification.joinerRole, 'worker');
+      expect(notification.category, 'team');
+      expect(notification.actionUrl, '/farm/members');
+      expect(notification.metadata, isNotNull);
       expect(notification.read, isTrue);
     });
 
@@ -95,17 +95,18 @@ void main() {
       final notification = AdminNotification(
         id: 'notif-3',
         type: 'member_removed',
-        recipientUserId: 'user-1',
+        userId: 'user-1',
         farmId: 'farm-1',
-        farmName: 'Test Farm',
+        title: 'Member Removed',
+        message: 'A member was removed',
         createdAt: DateTime.now(),
         read: false,
       );
 
-      expect(notification.joinerUserId, isNull);
-      expect(notification.joinerName, isNull);
-      expect(notification.removedBy, isNull);
-      expect(notification.removedByName, isNull);
+      expect(notification.category, isNull);
+      expect(notification.actionUrl, isNull);
+      expect(notification.metadata, isNull);
+      expect(notification.readAt, isNull);
     });
   });
 

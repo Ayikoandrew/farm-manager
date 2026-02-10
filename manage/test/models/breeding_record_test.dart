@@ -6,15 +6,15 @@ void main() {
     late BreedingRecord breedingRecord;
     late DateTime heatDate;
     late DateTime breedingDate;
-    late DateTime expectedFarrowDate;
+    late DateTime expectedDeliveryDate;
     late DateTime now;
 
     setUp(() {
       now = DateTime(2026, 1, 10);
       heatDate = DateTime(2025, 10, 1);
       breedingDate = DateTime(2025, 10, 3);
-      expectedFarrowDate = breedingDate.add(
-        const Duration(days: BreedingRecord.gestationDays),
+      expectedDeliveryDate = breedingDate.add(
+        const Duration(days: GestationPeriods.pig),
       );
 
       breedingRecord = BreedingRecord(
@@ -24,8 +24,8 @@ void main() {
         sireId: 'sire-001',
         heatDate: heatDate,
         breedingDate: breedingDate,
-        expectedFarrowDate: expectedFarrowDate,
-        actualFarrowDate: null,
+        expectedDeliveryDate: expectedDeliveryDate,
+        actualDeliveryDate: null,
         status: BreedingStatus.pregnant,
         litterSize: null,
         notes: 'First breeding',
@@ -40,13 +40,13 @@ void main() {
       expect(breedingRecord.sireId, 'sire-001');
       expect(breedingRecord.heatDate, heatDate);
       expect(breedingRecord.breedingDate, breedingDate);
-      expect(breedingRecord.expectedFarrowDate, expectedFarrowDate);
+      expect(breedingRecord.expectedDeliveryDate, expectedDeliveryDate);
       expect(breedingRecord.status, BreedingStatus.pregnant);
       expect(breedingRecord.notes, 'First breeding');
     });
 
     test('gestationDays constant should be 114', () {
-      expect(BreedingRecord.gestationDays, 114);
+      expect(GestationPeriods.pig, 114);
     });
 
     test('should calculate daysPregnant when status is pregnant', () {
@@ -103,7 +103,7 @@ void main() {
         animalId: 'animal',
         heatDate: DateTime.now().subtract(const Duration(days: 86)),
         breedingDate: DateTime.now().subtract(const Duration(days: 84)),
-        expectedFarrowDate: DateTime.now().add(Duration(days: daysUntil)),
+        expectedDeliveryDate: DateTime.now().add(Duration(days: daysUntil)),
         status: BreedingStatus.pregnant,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
@@ -119,7 +119,7 @@ void main() {
         farmId: 'farm-001',
         animalId: 'animal',
         heatDate: DateTime.now(),
-        expectedFarrowDate: DateTime.now().add(const Duration(days: 100)),
+        expectedDeliveryDate: DateTime.now().add(const Duration(days: 100)),
         status: BreedingStatus.bred,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
@@ -141,19 +141,19 @@ void main() {
     });
 
     test('should create a copy with modified properties', () {
-      final actualFarrow = DateTime(2026, 1, 25);
+      final actualDelivery = DateTime(2026, 1, 25);
       final updatedRecord = breedingRecord.copyWith(
-        status: BreedingStatus.farrowed,
-        actualFarrowDate: actualFarrow,
+        status: BreedingStatus.delivered,
+        actualDeliveryDate: actualDelivery,
         litterSize: 12,
       );
 
-      expect(updatedRecord.status, BreedingStatus.farrowed);
-      expect(updatedRecord.actualFarrowDate, actualFarrow);
+      expect(updatedRecord.status, BreedingStatus.delivered);
+      expect(updatedRecord.actualDeliveryDate, actualDelivery);
       expect(updatedRecord.litterSize, 12);
       // Original should remain unchanged
       expect(breedingRecord.status, BreedingStatus.pregnant);
-      expect(breedingRecord.actualFarrowDate, isNull);
+      expect(breedingRecord.actualDeliveryDate, isNull);
       expect(breedingRecord.litterSize, isNull);
     });
 
@@ -175,7 +175,7 @@ void main() {
       expect(BreedingStatus.values, contains(BreedingStatus.inHeat));
       expect(BreedingStatus.values, contains(BreedingStatus.bred));
       expect(BreedingStatus.values, contains(BreedingStatus.pregnant));
-      expect(BreedingStatus.values, contains(BreedingStatus.farrowed));
+      expect(BreedingStatus.values, contains(BreedingStatus.delivered));
       expect(BreedingStatus.values, contains(BreedingStatus.failed));
     });
   });
