@@ -315,7 +315,6 @@ void main() {
     test('should create animal financials with all properties', () {
       final financials = AnimalFinancials(
         animalId: 'animal-001',
-        animalTagId: 'PIG-001',
         totalInvestment: 500000.0,
         totalIncome: 1500000.0,
         feedCosts: 300000.0,
@@ -325,7 +324,6 @@ void main() {
       );
 
       expect(financials.animalId, 'animal-001');
-      expect(financials.animalTagId, 'PIG-001');
       expect(financials.totalInvestment, 500000.0);
       expect(financials.totalIncome, 1500000.0);
       expect(financials.netValue, 1000000.0);
@@ -334,7 +332,6 @@ void main() {
     test('should calculate ROI correctly', () {
       final financials = AnimalFinancials(
         animalId: 'animal-001',
-        animalTagId: 'PIG-001',
         totalInvestment: 500000.0,
         totalIncome: 1500000.0,
         feedCosts: 300000.0,
@@ -350,7 +347,6 @@ void main() {
     test('isProfitable returns correct value', () {
       final profitableAnimal = AnimalFinancials(
         animalId: 'animal-001',
-        animalTagId: 'PIG-001',
         totalInvestment: 500000.0,
         totalIncome: 1500000.0,
         feedCosts: 300000.0,
@@ -361,7 +357,6 @@ void main() {
 
       final unprofitableAnimal = AnimalFinancials(
         animalId: 'animal-002',
-        animalTagId: 'PIG-002',
         totalInvestment: 500000.0,
         totalIncome: 300000.0,
         feedCosts: 300000.0,
