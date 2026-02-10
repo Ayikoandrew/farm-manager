@@ -842,7 +842,7 @@ class ExportService {
       final weights = weightsByAnimal[animal.id] ?? [];
       for (final w in weights) {
         rows.add([
-          animal.name,
+          animal.displayName,
           animal.breed,
           dateFormat.format(w.date),
           w.weight.toStringAsFixed(1),
