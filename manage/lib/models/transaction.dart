@@ -299,7 +299,6 @@ class FinancialSummary {
 
 class AnimalFinancials {
   final String animalId;
-  final String animalTagId;
   final double totalInvestment;
   final double totalIncome;
   final double feedCosts;
@@ -309,7 +308,6 @@ class AnimalFinancials {
 
   AnimalFinancials({
     required this.animalId,
-    required this.animalTagId,
     required this.totalInvestment,
     required this.totalIncome,
     required this.feedCosts,
