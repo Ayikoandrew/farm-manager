@@ -38,7 +38,13 @@ class _MLScreenState extends ConsumerState<MLScreen> {
               ref.invalidate(feedingRecordsProvider);
               ref.invalidate(breedingRecordsProvider);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Data refreshed')),
+                SnackBar(
+                  content: const Text('Data refreshed'),
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
               );
             },
           ),
@@ -324,9 +330,15 @@ class _MLScreenState extends ConsumerState<MLScreen> {
         trailing: _buildStatusChip(status),
         onTap: () {
           // TODO: Navigate to model details or run prediction
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('$title - Coming soon!')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$title - Coming soon!'),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          );
         },
       ),
     );
@@ -413,9 +425,13 @@ class _MLScreenState extends ConsumerState<MLScreen> {
             OutlinedButton.icon(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
+                  SnackBar(
+                    content: const Text(
                       'Sample visualizations will be available once ML models are trained',
+                    ),
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                 );
@@ -544,6 +560,10 @@ class _MLScreenState extends ConsumerState<MLScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('Exporting data as ${format.toUpperCase()}...'),
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                         );
                         // TODO: Implement actual export functionality
