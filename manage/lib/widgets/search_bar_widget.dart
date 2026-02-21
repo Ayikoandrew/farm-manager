@@ -35,6 +35,21 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   }
 
   @override
+  void didUpdateWidget(SearchBarWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Handle controller replacement when widget rebuilds with a different controller
+    if (widget.controller != oldWidget.controller) {
+      _controller.removeListener(_onTextChanged);
+      if (oldWidget.controller == null) {
+        _controller.dispose();
+      }
+      _controller = widget.controller ?? TextEditingController();
+      _hasText = _controller.text.isNotEmpty;
+      _controller.addListener(_onTextChanged);
+    }
+  }
+
+  @override
   void dispose() {
     _controller.removeListener(_onTextChanged);
     if (widget.controller == null) {
@@ -54,7 +69,15 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   }
 
   void _clear() {
+    // Clear the controller without triggering the listener to avoid double-emit
+    _controller.removeListener(_onTextChanged);
     _controller.clear();
+    _controller.addListener(_onTextChanged);
+    
+    // Manually update state and call callbacks once
+    setState(() {
+      _hasText = false;
+    });
     widget.onChanged('');
     widget.onClear?.call();
   }

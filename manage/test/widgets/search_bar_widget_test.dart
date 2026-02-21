@@ -89,5 +89,127 @@ void main() {
       expect(searchText, equals(''));
       expect(find.byIcon(Icons.clear), findsNothing);
     });
+
+    testWidgets('onChanged is called only once when clear button is pressed', (WidgetTester tester) async {
+      int onChangedCallCount = 0;
+      String lastValue = '';
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SearchBarWidget(
+              hintText: 'Search',
+              onChanged: (value) {
+                onChangedCallCount++;
+                lastValue = value;
+              },
+            ),
+          ),
+        ),
+      );
+
+      // Enter text (this will trigger onChanged)
+      await tester.enterText(find.byType(TextField), 'test');
+      await tester.pump();
+      
+      // Reset counter after initial text entry
+      onChangedCallCount = 0;
+
+      // Tap clear button
+      await tester.tap(find.byIcon(Icons.clear));
+      await tester.pump();
+
+      // onChanged should be called exactly once with empty string
+      expect(onChangedCallCount, equals(1));
+      expect(lastValue, equals(''));
+    });
+
+    testWidgets('handles controller replacement after widget rebuilds', (WidgetTester tester) async {
+      final controller1 = TextEditingController(text: 'initial');
+      final controller2 = TextEditingController(text: 'replaced');
+      
+      String searchText = '';
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SearchBarWidget(
+              hintText: 'Search',
+              controller: controller1,
+              onChanged: (value) => searchText = value,
+            ),
+          ),
+        ),
+      );
+
+      // Verify initial controller is used
+      expect(find.text('initial'), findsOneWidget);
+
+      // Rebuild with a different controller
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SearchBarWidget(
+              hintText: 'Search',
+              controller: controller2,
+              onChanged: (value) => searchText = value,
+            ),
+          ),
+        ),
+      );
+
+      // Verify new controller is used
+      expect(find.text('replaced'), findsOneWidget);
+      
+      // Verify the widget still works with the new controller
+      await tester.enterText(find.byType(TextField), 'new text');
+      await tester.pump();
+      expect(searchText, equals('new text'));
+    });
+
+    testWidgets('uses provided controller', (WidgetTester tester) async {
+      final controller = TextEditingController(text: 'initial text');
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SearchBarWidget(
+              hintText: 'Search',
+              controller: controller,
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('initial text'), findsOneWidget);
+      expect(find.byIcon(Icons.clear), findsOneWidget);
+    });
+
+    testWidgets('calls onClear when clear button is pressed', (WidgetTester tester) async {
+      bool clearCalled = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SearchBarWidget(
+              hintText: 'Search',
+              onChanged: (_) {},
+              onClear: () => clearCalled = true,
+            ),
+          ),
+        ),
+      );
+
+      // Enter text
+      await tester.enterText(find.byType(TextField), 'test');
+      await tester.pump();
+
+      // Tap clear button
+      await tester.tap(find.byIcon(Icons.clear));
+      await tester.pump();
+
+      expect(clearCalled, isTrue);
+    });
   });
 }
