@@ -9,6 +9,7 @@ class EnvHelper {
   static const _supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
   static const _googleWebClient = String.fromEnvironment('GOOGLE_WEB_CLIENT');
   static const _geminiApiKey = String.fromEnvironment('GEMINI_API_KEY');
+  static const _memoryApiUrl = String.fromEnvironment('MEMORY_API_URL');
 
   /// Mark dotenv as initialized (call after successful dotenv.load())
   static void markDotenvInitialized() {
@@ -50,6 +51,8 @@ class EnvHelper {
         return _googleWebClient.isNotEmpty ? _googleWebClient : null;
       case 'GEMINI_API_KEY':
         return _geminiApiKey.isNotEmpty ? _geminiApiKey : null;
+      case 'MEMORY_API_URL':
+        return _memoryApiUrl.isNotEmpty ? _memoryApiUrl : null;
       default:
         return null;
     }

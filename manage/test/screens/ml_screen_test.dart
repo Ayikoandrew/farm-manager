@@ -143,7 +143,7 @@ void main() {
       expect(find.text('Data refreshed'), findsOneWidget);
     });
 
-    testWidgets('should show snackbar when Train Models is tapped', (
+    testWidgets('should have Train Models button disabled when no data is loaded', (
       tester,
     ) async {
       await tester.pumpWidget(createTestWidget());
@@ -157,11 +157,14 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Train Models'));
-      await tester.pumpAndSettle();
-
-      // Button is disabled when no data is loaded, so dialog does not appear
-      expect(find.text('Train ML Models'), findsNothing);
+      // Button is disabled when no data is loaded (onPressed == null)
+      final button = tester.widget<FilledButton>(
+        find.ancestor(
+          of: find.text('Train Models'),
+          matching: find.byType(FilledButton),
+        ),
+      );
+      expect(button.onPressed, isNull);
     });
 
     testWidgets('should display status chips with Not Trained label', (

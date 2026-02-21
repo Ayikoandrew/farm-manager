@@ -1,17 +1,27 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:manage/providers/auth_providers.dart';
+import 'package:manage/utils/env_helper.dart';
 
 /// Configuration for the Memory API
 class MemoryApiConfig {
   static String get baseUrl {
+    final configured = EnvHelper.get('MEMORY_API_URL');
+    if (configured != null && configured.isNotEmpty) {
+      return configured;
+    }
     if (kIsWeb) {
       return 'http://127.0.0.1:8000/api/v1/memory';
     }
-    // Android emulator uses 10.0.2.2 to reach host machine's localhost
-    return 'http://10.0.2.2:8000/api/v1/memory';
+    if (Platform.isAndroid) {
+      // Android emulator uses 10.0.2.2 to reach the host machine's localhost
+      return 'http://10.0.2.2:8000/api/v1/memory';
+    }
+    // iOS simulator and desktop can reach localhost directly
+    return 'http://127.0.0.1:8000/api/v1/memory';
   }
 }
 
@@ -403,7 +413,9 @@ Assistant: $assistantResponse
 }
 
 final memoryServiceProvider = Provider<MemoryService>((ref) {
-  return MemoryService();
+  final service = MemoryService();
+  ref.onDispose(() => service.dispose());
+  return service;
 });
 
 final userMemoryContextProvider =
@@ -429,5 +441,6 @@ final userMemoryContextProvider =
       return GetProfileResponse(
         profile: MemoryProfile(staticFacts: [], dynamicContext: []),
         searchResults: searchResponse.results,
+        error: searchResponse.error,
       );
     });
