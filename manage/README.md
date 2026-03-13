@@ -10,52 +10,52 @@ A comprehensive livestock management application built with Flutter and Supabase
 
 ---
 
-## ✨ Features
+## Features
 
-### 📊 Dashboard
+### Dashboard
 - Overview of total animals, health status, and breeding stats
 - Quick access to all modules
 - Real-time data sync with Supabase
 
-### 🐖 Animal Inventory
+### Animal Inventory
 - Track animals with tag ID, breed, gender, birth date
 - Monitor current weight and health status
 - Status tracking: Healthy, Sick, Pregnant, Nursing, Sold, Deceased
 - Age calculation and photo management
 - Link animals to their parents (sire/dam lineage)
 
-### 🏥 Health Management
+### Health Management
 - Comprehensive health records per animal
 - Vaccination tracking and scheduling
 - Treatment logs with medication details
 - Health status monitoring
 
-### 🍽️ Feeding Records
+### Feeding Records
 - Log daily feeding with feed type and quantity
 - Track feeding history per animal
 - Support for various feed types (Starter, Grower, Finisher, Custom)
 - Cost tracking per feeding
 
-### ⚖️ Weight Records
+### Weight Records
 - Record weight measurements over time
 - Automatic weight updates on animal profiles
 - Track growth progression with charts
 - Weight gain/loss analytics
 
-### 🤰 Breeding Management
+### Breeding Management
 - Heat cycle tracking and detection
 - Breeding date and sire recording
 - Pregnancy monitoring with days pregnant calculator
 - Expected farrowing/calving date calculation
 - Litter size tracking and offspring linking
 
-### 💰 Financial Management
+### Financial Management
 - Income and expense tracking
 - Transaction categorization
 - Financial reports and summaries
 - Payment integration with Flutterwave
 
-### 🛒 Livestock Marketplace (In progress)
+### Livestock Marketplace (In progress)
 - **Peer-to-peer marketplace** for buying, selling, and trading livestock
 - **PostGIS-powered** location-based search (find animals near you)
 - Seller profiles with verification levels
@@ -65,19 +65,19 @@ A comprehensive livestock management application built with Flutter and Supabase
 - Review and rating system for sellers
 - Saved searches with notifications
 
-### 🤖 AI-Powered Assistant
+### AI-Powered Assistant
 - Natural language queries about your farm data
 - AI-generated insights and recommendations
 - Powered by Google Gemini
 - GenUI components for interactive responses
 
-### 📈 Reports & Analytics
+### Reports & Analytics
 - Export data to PDF, CSV, and Excel
 - Weight progression charts
 - Breeding success rates
 - Financial summaries
 
-### 🔌 Hardware Integration (R&D)
+### Hardware Integration (R&D)
 We're actively researching and developing custom IoT hardware solutions:
 
 - **Custom IoT Scales** — Bluetooth/WiFi-enabled weighing scales designed specifically for livestock, with automatic weight capture and sync to the app
@@ -88,7 +88,7 @@ We're actively researching and developing custom IoT hardware solutions:
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 lib/
@@ -148,7 +148,7 @@ lib/
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Category | Technology |
 |----------|------------|
@@ -165,7 +165,7 @@ lib/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -206,8 +206,10 @@ lib/
 
 5. **Run the app**
    ```bash
-   flutter run
+   ./scripts/run.sh
    ```
+   
+   > **Note:** The run script automatically loads environment variables from `.env` and passes them to Flutter. Using `flutter run` directly will not load your configuration.
 
 ### Running Tests
 
@@ -224,7 +226,7 @@ flutter test test/repositories/animal_repository_test.dart
 
 ---
 
-## 📱 Supported Platforms
+## Supported Platforms
 
 | Platform | Status | Notes |
 |----------|--------|-------|
@@ -237,7 +239,7 @@ flutter test test/repositories/animal_repository_test.dart
 
 ---
 
-## 📂 Key Data Models
+## Key Data Models
 
 ### Animal
 | Field | Type | Description |
@@ -274,9 +276,9 @@ flutter test test/repositories/animal_repository_test.dart
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
-### Completed ✅
+### Completed 
 - Animal inventory management
 - Breeding records & pregnancy tracking
 - Feeding & weight records
@@ -284,16 +286,19 @@ flutter test test/repositories/animal_repository_test.dart
 - Financial tracking & payments
 - AI-powered assistant
 - Livestock marketplace (database & models)
-- PostGIS geospatial queries
+- P
+- 
+- 
+- ostGIS geospatial queries
 - Supabase Realtime for messaging & auctions
 
-### In Progress 🚧
+### In Progress 
 - Marketplace UI screens
 - Hardware IoT integration (R&D)
 - ML prediction models
 - Multi-farm support
 
-### Planned 📋
+### Planned 
 - Offline-first architecture with sync
 - Push notifications
 - Advanced analytics dashboard
@@ -306,7 +311,7 @@ See detailed roadmaps:
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Here's how to get started:
 
@@ -333,7 +338,7 @@ We welcome contributions! Here's how to get started:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 

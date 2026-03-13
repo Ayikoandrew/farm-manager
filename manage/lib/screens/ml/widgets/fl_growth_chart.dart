@@ -4,7 +4,7 @@ import '../ml_theme.dart';
 import '../../../models/ml_models.dart';
 
 /// A beautiful line chart for displaying growth data using fl_chart
-/// Replaces the CustomPaint-based GrowthChart for better visuals
+/// Enhanced with target progress, ADG badges, and breed comparison
 class FlGrowthChart extends StatelessWidget {
   final List<GrowthDataPoint> dataPoints;
   final double? targetWeight;
@@ -12,6 +12,10 @@ class FlGrowthChart extends StatelessWidget {
   final bool showLabels;
   final bool showPredicted;
   final String? title;
+  final GrowthStats? growthStats;
+  final List<GrowthDataPoint>? breedAveragePoints;
+  final double? currentWeight;
+  final VoidCallback? onShapTap;
 
   const FlGrowthChart({
     super.key,
@@ -21,6 +25,10 @@ class FlGrowthChart extends StatelessWidget {
     this.showLabels = true,
     this.showPredicted = true,
     this.title,
+    this.growthStats,
+    this.breedAveragePoints,
+    this.currentWeight,
+    this.onShapTap,
   });
 
   @override
@@ -40,14 +48,23 @@ class FlGrowthChart extends StatelessWidget {
             children: [
               Icon(Icons.show_chart, size: 20, color: MLTheme.trustBlue),
               const SizedBox(width: 8),
-              Text(
-                title!,
-                style: MLTheme.titleMedium.copyWith(
-                  color: MLTheme.textPrimaryColor(context),
+              Expanded(
+                child: Text(
+                  title!,
+                  style: MLTheme.titleMedium.copyWith(
+                    color: MLTheme.textPrimaryColor(context),
+                  ),
                 ),
               ),
+              // ADG Badge
+              if (growthStats != null) _buildAdgBadge(context),
             ],
           ),
+          const SizedBox(height: 16),
+        ],
+        // Target progress bar
+        if (targetWeight != null && currentWeight != null) ...[
+          _buildTargetProgressBar(context),
           const SizedBox(height: 16),
         ],
         Container(
@@ -59,6 +76,11 @@ class FlGrowthChart extends StatelessWidget {
           ),
         ),
         if (showLabels) ...[const SizedBox(height: 12), _buildLegend(context)],
+        // SHAP explanation button
+        if (onShapTap != null) ...[
+          const SizedBox(height: 12),
+          _buildShapButton(context),
+        ],
       ],
     );
   }
@@ -256,6 +278,21 @@ class FlGrowthChart extends StatelessWidget {
               ),
             ),
           ),
+        // Breed average line (optional)
+        if (breedAveragePoints != null && breedAveragePoints!.isNotEmpty)
+          LineChartBarData(
+            spots: breedAveragePoints!.map((p) {
+              return FlSpot(p.date.millisecondsSinceEpoch.toDouble(), p.weight);
+            }).toList(),
+            isCurved: true,
+            curveSmoothness: 0.3,
+            color: Colors.purple.withValues(alpha: 0.7),
+            barWidth: 2,
+            isStrokeCapRound: true,
+            dashArray: [4, 4],
+            dotData: const FlDotData(show: false),
+            belowBarData: BarAreaData(show: false),
+          ),
       ],
       extraLinesData: targetWeight != null
           ? ExtraLinesData(
@@ -374,7 +411,173 @@ class FlGrowthChart extends StatelessWidget {
             isDashed: true,
             context: context,
           ),
+        if (breedAveragePoints != null && breedAveragePoints!.isNotEmpty)
+          _LegendItem(
+            color: Colors.purple,
+            label: 'Breed Avg',
+            isDashed: true,
+            context: context,
+          ),
       ],
+    );
+  }
+
+  /// Builds the ADG (Average Daily Gain) badge
+  Widget _buildAdgBadge(BuildContext context) {
+    final adg = growthStats!.dailyGain7d;
+    final trend = growthStats!.changePercent7d;
+    final isGood = adg >= growthStats!.breedAverage;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: isGood
+            ? MLTheme.successGreen.withValues(alpha: 0.1)
+            : MLTheme.warningOrange.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isGood
+              ? MLTheme.successGreen.withValues(alpha: 0.3)
+              : MLTheme.warningOrange.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isGood ? Icons.trending_up : Icons.trending_flat,
+            size: 14,
+            color: isGood ? MLTheme.successGreen : MLTheme.warningOrange,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            '${adg.toStringAsFixed(2)} kg/day',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: isGood ? MLTheme.successGreen : MLTheme.warningOrange,
+            ),
+          ),
+          if (trend != 0) ...[
+            const SizedBox(width: 4),
+            Text(
+              '${trend >= 0 ? "+" : ""}${trend.toStringAsFixed(0)}%',
+              style: TextStyle(
+                fontSize: 10,
+                color: trend >= 0 ? MLTheme.successGreen : MLTheme.dangerRed,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  /// Builds the target weight progress bar
+  Widget _buildTargetProgressBar(BuildContext context) {
+    final progress = (currentWeight! / targetWeight!).clamp(0.0, 1.0);
+    final progressPercent = (progress * 100).toStringAsFixed(0);
+    final remaining = targetWeight! - currentWeight!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.flag, size: 16, color: MLTheme.warningOrange),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Target: ${targetWeight!.toStringAsFixed(0)} kg',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: MLTheme.textPrimaryColor(context),
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                '$progressPercent%',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: progress >= 1.0
+                      ? MLTheme.successGreen
+                      : MLTheme.trustBlue,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 8,
+              backgroundColor: isDark
+                  ? Colors.white.withValues(alpha: 0.1)
+                  : Colors.grey.shade200,
+              valueColor: AlwaysStoppedAnimation(
+                progress >= 1.0 ? MLTheme.successGreen : MLTheme.trustBlue,
+              ),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            remaining > 0
+                ? '${remaining.toStringAsFixed(1)} kg to go'
+                : 'Target reached! 🎉',
+            style: TextStyle(
+              fontSize: 11,
+              color: MLTheme.textSubtleColor(context),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Builds the SHAP explanation button
+  Widget _buildShapButton(BuildContext context) {
+    return GestureDetector(
+      onTap: onShapTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: MLTheme.trustBlue.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: MLTheme.trustBlue.withValues(alpha: 0.2)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.psychology, size: 18, color: MLTheme.trustBlue),
+            const SizedBox(width: 8),
+            Text(
+              'Why this prediction?',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: MLTheme.trustBlue,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(Icons.arrow_forward_ios, size: 12, color: MLTheme.trustBlue),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -3,7 +3,28 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../config/theme.dart';
 import '../../../models/ml_models.dart';
+import '../../../models/health_record.dart';
 import '../../../providers/ml_analytics_provider.dart';
+import '../../../providers/providers.dart';
+
+/// A dynamic recommended action based on real data
+class RecommendedAction {
+  final String title;
+  final String description;
+  final IconData icon;
+  final Color color;
+  final ActionPriority priority;
+
+  const RecommendedAction({
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.color,
+    required this.priority,
+  });
+}
+
+enum ActionPriority { urgent, high, medium, low }
 
 class HealthAnalyticsTab extends ConsumerWidget {
   const HealthAnalyticsTab({super.key});
@@ -14,6 +35,11 @@ class HealthAnalyticsTab extends ConsumerWidget {
     final isDark = theme.brightness == Brightness.dark;
     final mlState = ref.watch(mlAnalyticsProvider);
 
+    // Watch real data for dynamic recommendations
+    final upcomingVaccinations = ref.watch(upcomingVaccinationsProvider);
+    final pendingFollowUps = ref.watch(pendingFollowUpsProvider);
+    final animalsInWithdrawal = ref.watch(animalsInWithdrawalProvider);
+
     if (mlState.isLoading && !mlState.hasData) {
       return Center(
         child: CircularProgressIndicator(color: AppTheme.farmGreen),
@@ -21,11 +47,22 @@ class HealthAnalyticsTab extends ConsumerWidget {
     }
 
     final healthSummary = mlState.healthSummary;
-    final atRiskAnimals = mlState.atRiskAnimals; // List<AnimalHealthScore>
+    final atRiskAnimals = mlState.atRiskAnimals;
+    final predictions = mlState.predictions;
 
     if (healthSummary == null) {
       return const Center(child: Text('No health data available'));
     }
+
+    // Generate dynamic recommendations
+    final recommendations = _generateRecommendations(
+      healthSummary: healthSummary,
+      atRiskAnimals: atRiskAnimals,
+      predictions: predictions,
+      upcomingVaccinations: upcomingVaccinations.value ?? [],
+      pendingFollowUps: pendingFollowUps.value ?? [],
+      animalsInWithdrawal: animalsInWithdrawal.value ?? [],
+    );
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -57,24 +94,237 @@ class HealthAnalyticsTab extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 12),
-        _buildActionCard(
-          'Vaccination Schedule',
-          '3 animals due for vaccination in next 5 days',
-          Icons.medical_services,
-          Colors.blue,
-          theme,
-          isDark,
-        ),
-        _buildActionCard(
-          'Dietary Adjustment',
-          'Consider increasing protein for group B',
-          Icons.restaurant,
-          Colors.orange,
-          theme,
-          isDark,
-        ),
+        if (recommendations.isNotEmpty)
+          ...recommendations.map(
+            (action) => _buildActionCard(
+              action.title,
+              action.description,
+              action.icon,
+              action.color,
+              theme,
+              isDark,
+            ),
+          )
+        else
+          _buildNoActionsState(theme),
       ],
     );
+  }
+
+  /// Generate dynamic recommendations based on actual data
+  List<RecommendedAction> _generateRecommendations({
+    required HerdHealthSummary healthSummary,
+    required List<AnimalHealthScore> atRiskAnimals,
+    required List<WeightPrediction> predictions,
+    required List<HealthRecord> upcomingVaccinations,
+    required List<HealthRecord> pendingFollowUps,
+    required List<HealthRecord> animalsInWithdrawal,
+  }) {
+    final recommendations = <RecommendedAction>[];
+
+    // 1. Upcoming vaccinations
+    if (upcomingVaccinations.isNotEmpty) {
+      final dueIn5Days = upcomingVaccinations.where((v) {
+        final daysUntilDue =
+            v.nextDueDate?.difference(DateTime.now()).inDays ?? 999;
+        return daysUntilDue <= 5;
+      }).toList();
+
+      if (dueIn5Days.isNotEmpty) {
+        recommendations.add(
+          RecommendedAction(
+            title: 'Vaccination Due',
+            description:
+                '${dueIn5Days.length} animal${dueIn5Days.length > 1 ? 's' : ''} due for vaccination in the next 5 days',
+            icon: Icons.medical_services,
+            color: Colors.blue,
+            priority: ActionPriority.high,
+          ),
+        );
+      } else {
+        recommendations.add(
+          RecommendedAction(
+            title: 'Upcoming Vaccinations',
+            description:
+                '${upcomingVaccinations.length} vaccination${upcomingVaccinations.length > 1 ? 's' : ''} scheduled',
+            icon: Icons.medical_services,
+            color: Colors.blue,
+            priority: ActionPriority.medium,
+          ),
+        );
+      }
+    }
+
+    // 2. Pending follow-ups
+    if (pendingFollowUps.isNotEmpty) {
+      final overdue = pendingFollowUps.where((f) {
+        return f.followUpDate?.isBefore(DateTime.now()) ?? false;
+      }).toList();
+
+      if (overdue.isNotEmpty) {
+        recommendations.add(
+          RecommendedAction(
+            title: 'Overdue Follow-ups',
+            description:
+                '${overdue.length} follow-up${overdue.length > 1 ? 's' : ''} overdue - schedule vet visit',
+            icon: Icons.event_busy,
+            color: Colors.red,
+            priority: ActionPriority.urgent,
+          ),
+        );
+      } else {
+        recommendations.add(
+          RecommendedAction(
+            title: 'Pending Follow-ups',
+            description:
+                '${pendingFollowUps.length} health check${pendingFollowUps.length > 1 ? 's' : ''} pending',
+            icon: Icons.event_note,
+            color: Colors.orange,
+            priority: ActionPriority.medium,
+          ),
+        );
+      }
+    }
+
+    // 3. Animals in withdrawal period
+    if (animalsInWithdrawal.isNotEmpty) {
+      recommendations.add(
+        RecommendedAction(
+          title: 'Withdrawal Period Active',
+          description:
+              '${animalsInWithdrawal.length} animal${animalsInWithdrawal.length > 1 ? 's' : ''} in medication withdrawal - not for sale',
+          icon: Icons.do_not_disturb_alt,
+          color: Colors.purple,
+          priority: ActionPriority.high,
+        ),
+      );
+    }
+
+    // 4. At-risk animals dietary recommendations
+    if (atRiskAnimals.isNotEmpty) {
+      // Check if any risk factors mention weight or nutrition
+      final nutritionRelated = atRiskAnimals
+          .where(
+            (a) => a.riskFactors.any(
+              (f) =>
+                  f.name.toLowerCase().contains('weight') ||
+                  f.name.toLowerCase().contains('feed') ||
+                  f.name.toLowerCase().contains('nutrition') ||
+                  f.description.toLowerCase().contains('underweight'),
+            ),
+          )
+          .toList();
+
+      if (nutritionRelated.isNotEmpty) {
+        recommendations.add(
+          RecommendedAction(
+            title: 'Dietary Review Needed',
+            description:
+                '${nutritionRelated.length} animal${nutritionRelated.length > 1 ? 's' : ''} may need feed adjustment based on health scores',
+            icon: Icons.restaurant,
+            color: Colors.orange,
+            priority: ActionPriority.medium,
+          ),
+        );
+      }
+
+      // Check for critical risk animals
+      final criticalAnimals = atRiskAnimals
+          .where((a) => a.riskLevel == RiskLevel.critical)
+          .toList();
+
+      if (criticalAnimals.isNotEmpty) {
+        recommendations.add(
+          RecommendedAction(
+            title: 'Critical Attention Required',
+            description:
+                '${criticalAnimals.length} animal${criticalAnimals.length > 1 ? 's' : ''} in critical condition - immediate action needed',
+            icon: Icons.warning_amber,
+            color: Colors.red,
+            priority: ActionPriority.urgent,
+          ),
+        );
+      }
+    }
+
+    // 5. Underweight animals from predictions
+    final underweightAnimals = predictions.where((p) {
+      if (p.targetWeight == null) return false;
+      return p.currentWeight <
+          (p.targetWeight! * 0.7); // Less than 70% of target
+    }).toList();
+
+    if (underweightAnimals.isNotEmpty) {
+      recommendations.add(
+        RecommendedAction(
+          title: 'Weight Management',
+          description:
+              '${underweightAnimals.length} animal${underweightAnimals.length > 1 ? 's' : ''} significantly below target weight',
+          icon: Icons.monitor_weight,
+          color: Colors.teal,
+          priority: ActionPriority.medium,
+        ),
+      );
+    }
+
+    // 6. Upcoming health tasks from summary
+    final urgentTasks = healthSummary.upcomingTasks.where((t) {
+      return t.isOverdue || t.isDueToday;
+    }).toList();
+
+    for (final task in urgentTasks.take(2)) {
+      // Limit to 2
+      recommendations.add(
+        RecommendedAction(
+          title: task.title,
+          description: task.isOverdue
+              ? 'Overdue: ${task.description}'
+              : 'Due today: ${task.animalCount} animal${task.animalCount > 1 ? 's' : ''}',
+          icon: _getTaskIcon(task.type),
+          color: task.isOverdue ? Colors.red : Colors.amber,
+          priority: task.isOverdue
+              ? ActionPriority.urgent
+              : ActionPriority.high,
+        ),
+      );
+    }
+
+    // 7. General herd health recommendation
+    if (healthSummary.overallScore < 70 && recommendations.length < 5) {
+      recommendations.add(
+        RecommendedAction(
+          title: 'Herd Health Review',
+          description:
+              'Overall herd health score is ${healthSummary.overallScore}% - consider veterinary consultation',
+          icon: Icons.health_and_safety,
+          color: Colors.indigo,
+          priority: ActionPriority.medium,
+        ),
+      );
+    }
+
+    // Sort by priority
+    recommendations.sort(
+      (a, b) => a.priority.index.compareTo(b.priority.index),
+    );
+
+    // Return top 5 recommendations
+    return recommendations.take(5).toList();
+  }
+
+  IconData _getTaskIcon(String taskType) {
+    switch (taskType.toLowerCase()) {
+      case 'vaccination':
+        return Icons.vaccines;
+      case 'checkup':
+        return Icons.fact_check;
+      case 'treatment':
+        return Icons.medical_services;
+      case 'deworming':
+        return Icons.bug_report;
+      default:
+        return Icons.assignment;
+    }
   }
 
   Widget _buildHealthScoreCard(
@@ -351,6 +601,31 @@ class HealthAnalyticsTab extends ConsumerWidget {
           const SizedBox(width: 12),
           Text(
             'No animals currently at risk',
+            style: GoogleFonts.inter(
+              color: Colors.green,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNoActionsState(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.green.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.green.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.thumb_up_outlined, color: Colors.green),
+          const SizedBox(width: 12),
+          Text(
+            'All caught up! No actions needed',
             style: GoogleFonts.inter(
               color: Colors.green,
               fontWeight: FontWeight.w500,

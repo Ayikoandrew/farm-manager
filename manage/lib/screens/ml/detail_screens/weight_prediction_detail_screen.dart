@@ -8,18 +8,23 @@ import 'shap_explanation_screen.dart';
 ///
 /// Shows detailed prediction information for a single animal:
 /// - Current vs predicted weight
-/// - Growth trajectory chart
+/// - Growth trajectory chart with target progress
+/// - ADG badges and breed comparison
 /// - Confidence range
 /// - Link to SHAP explanations
 /// - Action buttons (record weight, schedule sale)
 class WeightPredictionDetailScreen extends StatelessWidget {
   final WeightPrediction prediction;
   final List<GrowthDataPoint> chartData;
+  final GrowthStats? growthStats;
+  final List<GrowthDataPoint>? breedAveragePoints;
 
   const WeightPredictionDetailScreen({
     super.key,
     required this.prediction,
     required this.chartData,
+    this.growthStats,
+    this.breedAveragePoints,
   });
 
   @override
@@ -74,12 +79,8 @@ class WeightPredictionDetailScreen extends StatelessWidget {
             _buildPredictionCard(context),
             const SizedBox(height: 20),
 
-            // Growth trajectory chart
+            // Growth trajectory chart (includes target progress, ADG, SHAP button)
             _buildGrowthTrajectoryCard(context),
-            const SizedBox(height: 20),
-
-            // Why this prediction
-            _buildWhyPredictionCard(context),
             const SizedBox(height: 20),
 
             // Growth stats
@@ -204,78 +205,17 @@ class WeightPredictionDetailScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: MLTheme.cardDecorationFor(context),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.show_chart, color: MLTheme.trustBlue, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                'Growth Trajectory',
-                style: MLTheme.titleMedium.copyWith(
-                  color: MLTheme.textPrimaryColor(context),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          FlGrowthChart(
-            dataPoints: chartData,
-            showLabels: true,
-            showPredicted: true,
-            height: 200,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWhyPredictionCard(BuildContext context) {
-    return GestureDetector(
-      onTap: () => _navigateToShapExplanation(context),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: MLTheme.trustBlue.withValues(alpha: 0.05),
-          borderRadius: MLTheme.borderRadiusLg,
-          border: Border.all(color: MLTheme.trustBlue.withValues(alpha: 0.2)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: MLTheme.trustBlue.withValues(alpha: 0.1),
-                borderRadius: MLTheme.borderRadiusMd,
-              ),
-              child: const Icon(
-                Icons.search,
-                color: MLTheme.trustBlue,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 16),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Why this prediction?', style: MLTheme.titleSmall),
-                  SizedBox(height: 2),
-                  Text(
-                    'See what factors influenced this prediction',
-                    style: MLTheme.bodySmall,
-                  ),
-                ],
-              ),
-            ),
-            const Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: MLTheme.trustBlue,
-            ),
-          ],
-        ),
+      child: FlGrowthChart(
+        dataPoints: chartData,
+        showLabels: true,
+        showPredicted: true,
+        height: 200,
+        title: 'Growth Trajectory',
+        targetWeight: prediction.targetWeight,
+        currentWeight: prediction.currentWeight,
+        growthStats: growthStats,
+        breedAveragePoints: breedAveragePoints,
+        onShapTap: () => _navigateToShapExplanation(context),
       ),
     );
   }
