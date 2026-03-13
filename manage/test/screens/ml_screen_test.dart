@@ -84,13 +84,7 @@ void main() {
       );
     });
 
-    testWidgets('should display Visualizations section', (tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
-
-      expect(find.text('Visualizations'), findsOneWidget);
-      expect(find.text('Charts & Graphs'), findsOneWidget);
-    });
+    // Note: Visualizations section was removed from current UI
 
     testWidgets('should display Data Summary section', (tester) async {
       await tester.pumpWidget(createTestWidget());
@@ -110,21 +104,7 @@ void main() {
       expect(find.text('Breeding Records'), findsOneWidget);
     });
 
-    testWidgets('should display Export Data button', (tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
-
-      expect(find.text('Export Data'), findsOneWidget);
-      expect(find.byIcon(Icons.download), findsOneWidget);
-    });
-
-    testWidgets('should display Train Models button', (tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
-
-      expect(find.text('Train Models'), findsOneWidget);
-      expect(find.byIcon(Icons.play_arrow), findsOneWidget);
-    });
+    // Note: Export Data and Train Models buttons were removed from current UI
 
     testWidgets('should display refresh button in app bar', (tester) async {
       await tester.pumpWidget(createTestWidget());
@@ -140,28 +120,7 @@ void main() {
       await tester.tap(find.byIcon(Icons.refresh));
       await tester.pumpAndSettle();
 
-      expect(find.text('Data refreshed'), findsOneWidget);
-    });
-
-    testWidgets('should show snackbar when Train Models is tapped', (
-      tester,
-    ) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
-
-      // Scroll to make Train Models button visible
-      await tester.dragUntilVisible(
-        find.text('Train Models'),
-        find.byType(SingleChildScrollView),
-        const Offset(0, -300),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Train Models'));
-      await tester.pumpAndSettle();
-
-      // Button is disabled when no data is loaded, so dialog does not appear
-      expect(find.text('Train ML Models'), findsNothing);
+      expect(find.text('Refreshing ML data...'), findsOneWidget);
     });
 
     testWidgets('should display status chips with Not Trained label', (
